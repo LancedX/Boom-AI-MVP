@@ -514,8 +514,9 @@ export const StudentDirectory: React.FC = () => {
                     </span>
                   </div>
 
-                  <div className="text-xs text-coral-ink font-medium">
-                    ⚠️ {student.primaryRiskFactor}
+                  <div className="text-xs text-coral-ink font-medium flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>{student.primaryRiskFactor}</span>
                   </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-line/60">

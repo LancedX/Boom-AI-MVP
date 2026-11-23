@@ -11,7 +11,7 @@
 
 ---
 
-## 🏛️ Executive Summary
+## Executive Summary
 
 - **Design Partner:** Foothill Community College (Foothill-De Anza Community College District)
 - **Pilot Scope:** Spring 2027 Quarter ($15,000 fixed-fee proposed pilot)
@@ -20,7 +20,7 @@
 
 ---
 
-## ⚡ Key Product Capabilities
+## Key Product Capabilities
 
 ### 1. Explainable, Deterministic Risk Engine
 - **Zero Black-Box AI Decisions:** No generative AI model ranks or decides on student records. Every score is mathematically calculated from 7 transparent, versioned institutional rules.
@@ -66,7 +66,7 @@ Deep, fact-checked student profile drawers covering:
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## Tech Stack & Architecture
 
 - **Frontend:** React 18, TypeScript, Tailwind CSS, Lucide Icons
 - **Build System:** Vite 5 (production build under 1.1s, HMR)
@@ -76,7 +76,7 @@ Deep, fact-checked student profile drawers covering:
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js 18+ (tested on Node v22.18)
@@ -107,7 +107,7 @@ Open `http://localhost:3000/` in your browser.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 Boom MVP/
@@ -153,7 +153,7 @@ Boom MVP/
 
 ---
 
-## 🔒 Data Privacy & Ethics
+## Data Privacy & Ethics
 
 1. **FERPA Protection:** Student data is processed locally within the in-memory presentation ledger; no student records or transcripts are transmitted to external generative AI services.
 2. **Auditability:** Every intervention, approval, and configuration adjustment is permanently logged with timestamps and student IDs (excluding sensitive message text).
@@ -161,6 +161,6 @@ Boom MVP/
 
 ---
 
-## 📄 License
+## License
 
 Proprietary prototype developed for demonstration to Foothill Community College. All rights reserved.

@@ -406,7 +406,10 @@ export const OutreachCenter: React.FC = () => {
                     onClick={() => handleReplyShortcut('Sent Form — I uploaded my verification docs.')}
                     className="w-full py-1.5 px-2 bg-surface-1 hover:bg-ok-tint text-ink hover:text-ok text-[11px] font-medium rounded-lg border border-line transition-colors text-left truncate flex items-center justify-between"
                   >
-                    <span>👍 "Sent Form"</span>
+                    <span className="flex items-center gap-1.5">
+                      <CheckCircle className="w-3 h-3 text-ok flex-shrink-0" />
+                      "Sent Form"
+                    </span>
                     <span className="text-[9px] text-muted">Resolves hold</span>
                   </button>
 
@@ -415,7 +418,10 @@ export const OutreachCenter: React.FC = () => {
                     onClick={() => handleReplyShortcut('Need Advisor — Can we meet tomorrow?')}
                     className="w-full py-1.5 px-2 bg-surface-1 hover:bg-coral-tint text-ink hover:text-coral-ink text-[11px] font-medium rounded-lg border border-line transition-colors text-left truncate flex items-center justify-between"
                   >
-                    <span>⚠️ "Need Advisor"</span>
+                    <span className="flex items-center gap-1.5">
+                      <AlertTriangle className="w-3 h-3 text-coral-ink flex-shrink-0" />
+                      "Need Advisor"
+                    </span>
                     <span className="text-[9px] text-muted">Books 1-on-1</span>
                   </button>
 
@@ -424,7 +430,10 @@ export const OutreachCenter: React.FC = () => {
                     onClick={() => handleReplyShortcut('Got it, registered! — Just enrolled in 14 units.', true)}
                     className="w-full py-1.5 px-2 bg-surface-1 hover:bg-ok-tint text-ink hover:text-ok text-[11px] font-medium rounded-lg border border-line transition-colors text-left truncate flex items-center justify-between"
                   >
-                    <span>🎉 "Just registered!"</span>
+                    <span className="flex items-center gap-1.5">
+                      <CheckCircle className="w-3 h-3 text-ok flex-shrink-0" />
+                      "Just registered!"
+                    </span>
                     <span className="text-[9px] text-ok font-semibold">Spring Confirmed</span>
                   </button>
                 </div>

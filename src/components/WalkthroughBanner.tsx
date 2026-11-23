@@ -62,7 +62,7 @@ export const WalkthroughBanner: React.FC = () => {
 
             {currentStepData.actionPrompt && (
               <div className="mt-2 text-xs font-medium text-coral-tint bg-coral/20 px-2.5 py-1 rounded inline-block">
-                👉 <span className="font-semibold text-white">Suggested Action:</span>{' '}
+                <span className="font-semibold text-white">Suggested Action:</span>{' '}
                 {currentStepData.actionPrompt}
               </div>
             )}
