@@ -1,0 +1,1321 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Boom AI · Foothill College prototype</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: the website's live-demo section as a six-part walkthrough. Chapter rail on the left, one working mock on the right, pilot planning at the end. Light-only, matching the Boom AI site (no uppercase, no monospace). */
+:root {
+  --bg: #FFFFFF; --bg-2: #F5F5F6; --bg-3: #ECECEE; --soft: #FAFAFB;
+  --ink: #151517; --ink-2: #2A2A2E; --muted: #62626A; --faint: #93939B;
+  --line: #E8E8EB; --line-2: #D6D6DB;
+  --coral: #D2553A; --coral-ink: #B8442B; --coral-tint: #FDEDE8; --coral-row: #FEF6F3;
+  --ok: #4F7F5E; --ok-tint: #E6F0E8; --warn: #8A6414; --warn-tint: #FBF1DC;
+  --sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --display: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --ease: cubic-bezier(.22, .8, .24, 1);
+  --shadow-card: 0 1px 0 rgba(21,21,23,.03), 0 14px 36px -14px rgba(21,21,23,.16), 0 2px 6px -2px rgba(21,21,23,.05);
+  --shadow-big: 0 50px 100px -40px rgba(21,21,23,.26), 0 18px 40px -24px rgba(21,21,23,.14);
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; font-feature-settings: "cv11", "ss01"; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: 0; padding: 0; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3, p { margin: 0; }
+
+.wrap { max-width: 1320px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 700px) { .wrap { padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); } }
+
+/* Header and intro */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 22px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 600; font-size: 21px; letter-spacing: -0.035em; }
+.logo { width: 26px; height: 26px; flex: none; }
+.tag { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 6px; border: 1px solid var(--line-2); font-size: 12px; color: var(--muted); white-space: nowrap; }
+.kicker { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; margin-top: 18px; }
+.kicker .logo { width: 20px; height: 20px; }
+.kicker .rule { flex: 1; height: 1px; background: var(--line); }
+.kicker .note { color: var(--muted); font-weight: 400; }
+.intro { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 24px 48px; align-items: end; padding-block: 34px 40px; }
+.intro h1 { font-family: var(--display); font-weight: 500; font-size: clamp(2.3rem, 1.4rem + 3vw, 4.1rem); line-height: 1.02; letter-spacing: -0.04em; text-wrap: balance; }
+.intro h1 em { font-style: normal; color: var(--coral); }
+.intro p { color: var(--muted); font-size: 16.5px; max-width: 60ch; }
+
+/* Chapters */
+.demo { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 40px; align-items: start; padding-bottom: 72px; }
+.rail { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 22px; }
+.steps { list-style: none; margin: 0; padding: 0; position: relative; }
+.steps::before { content: ""; position: absolute; left: 7px; top: 14px; bottom: 14px; width: 1px; background: var(--line); }
+.steps li { position: relative; padding: 6px 0; }
+.step { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; font-family: var(--display); font-size: 18px; font-weight: 500; letter-spacing: -0.025em; color: var(--faint); transition: color .25s var(--ease); }
+.step:hover { color: var(--ink-2); }
+.ring { position: relative; z-index: 1; width: 15px; height: 15px; flex: none; border-radius: 50%; border: 1.5px solid var(--line-2); background: #fff; transition: border-color .3s, transform .3s var(--ease); }
+.ring::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--coral); transform: scale(0); transition: transform .3s var(--ease); }
+li.is-done .ring { border-color: var(--ink); background: var(--ink); }
+li.is-active .ring { border-color: var(--coral); transform: scale(1.15); }
+li.is-active .ring::after { transform: scale(1); }
+li.is-active .step { color: var(--ink); }
+.step-p { margin: 0 0 0 29px; font-size: 14.5px; color: var(--muted); display: none; }
+li.is-active .step-p { display: block; margin-top: 6px; }
+.step-p ul { margin: 8px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.rail-note { font-size: 13px; color: var(--faint); display: flex; align-items: center; gap: 8px; }
+.dot-ok { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px var(--ok-tint); }
+.rail-nav { display: flex; gap: 8px; }
+
+/* Buttons and pills */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 999px; font-size: 14px; font-weight: 500; border: 1px solid var(--line-2); background: #fff; transition: border-color .2s, background-color .2s, transform .15s; white-space: nowrap; }
+.btn:hover { border-color: var(--ink); }
+.btn:active { transform: scale(.97); }
+.btn--dark { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn--dark:hover { background: #000; }
+.btn--sm { height: 32px; padding: 0 13px; font-size: 13px; }
+.btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+.pill { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.pill::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.pill--high { color: var(--coral-ink); background: var(--coral-tint); }
+.pill--med { color: var(--warn); background: var(--warn-tint); }
+.pill--watch { color: var(--muted); background: var(--bg-2); }
+.pill--ok { color: var(--ok); background: var(--ok-tint); }
+.pill--plain { color: var(--muted); background: #fff; border: 1px solid var(--line-2); }
+.chip { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 6px; background: var(--coral-tint); color: var(--coral-ink); font-size: 12.5px; font-weight: 500; white-space: nowrap; }
+.chip--grey { background: var(--bg-2); color: var(--ink-2); }
+
+/* The window that holds each mock */
+.stage { min-width: 0; }
+.panel { display: none; }
+.panel.is-on { display: block; animation: panelIn .45s var(--ease); }
+@keyframes panelIn { from { opacity: 0; transform: translateY(10px); } }
+@media (prefers-reduced-motion: reduce) { .panel.is-on { animation: none; } html { scroll-behavior: auto; } }
+.app { background: #fff; border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-big); overflow: hidden; }
+.app__bar { display: flex; align-items: center; gap: 14px; min-height: 54px; padding: 8px 16px 8px 18px; border-bottom: 1px solid var(--line); background: var(--soft); flex-wrap: wrap; }
+.app__title { display: flex; align-items: center; gap: 9px; font-size: 14px; white-space: nowrap; }
+.app__title b { font-weight: 600; }
+.app__title .in { color: var(--faint); font-size: 13px; }
+.app__bar .grow { flex: 1; }
+.seg { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--bg-2); gap: 2px; }
+.seg button { height: 28px; padding: 0 12px; border-radius: 999px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: #fff; color: var(--ink); font-weight: 500; box-shadow: 0 0 0 1px var(--line), 0 2px 6px -3px rgba(21,21,23,.15); }
+.avatar { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--coral-tint); color: var(--coral-ink); font-size: 12.5px; font-weight: 600; flex: none; }
+.avatar--xs { width: 26px; height: 26px; font-size: 10.5px; background: var(--bg-2); color: var(--ink-2); }
+.avatar.is-quiet { background: var(--bg-2); color: var(--muted); }
+
+/* Email (digest) */
+.mail-head { padding: 20px 24px 16px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+.mail-subject { font-family: var(--display); font-size: 21px; font-weight: 500; letter-spacing: -0.025em; line-height: 1.25; }
+.mail-meta { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.mail-meta b { color: var(--ink); font-weight: 500; }
+.mail-meta .when { margin-left: auto; font-variant-numeric: tabular-nums; }
+.mail-body { padding: 18px 24px 24px; max-height: 760px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line-2) transparent; }
+.mail-greet { color: var(--ink-2); margin-bottom: 14px; max-width: 70ch; }
+.mail-greet b { font-weight: 600; }
+.wins { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border-radius: 14px; background: var(--ok-tint); color: var(--ok); margin-bottom: 14px; }
+.wins b { font-weight: 600; }
+.wins .names { display: flex; flex-wrap: wrap; gap: 6px; }
+.wins .names span { background: #fff; color: var(--ok); border-radius: 999px; padding: 2px 10px; font-size: 12.5px; font-weight: 500; }
+
+.stu { position: relative; display: grid; grid-template-columns: 26px 36px minmax(0, 1fr); gap: 4px 12px; padding: 16px 14px; border-top: 1px solid var(--line); transition: background-color .25s var(--ease); }
+.stu::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--coral); transform: scaleY(0); transition: transform .3s var(--ease); }
+.stu.is-focus { background: var(--coral-row); }
+.stu.is-focus::before { transform: scaleY(1); }
+.stu.is-handled .avatar { background: var(--bg-2); color: var(--muted); }
+.stu__rank { font-size: 13px; color: var(--faint); font-variant-numeric: tabular-nums; padding-top: 8px; text-align: right; }
+.stu__main { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.stu__top { display: flex; align-items: baseline; gap: 8px 10px; flex-wrap: wrap; }
+.stu__name { font-size: 15px; font-weight: 600; }
+.stu__id { font-size: 12.5px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.stu__top .pill { margin-left: auto; }
+.reasons { display: flex; flex-wrap: wrap; gap: 6px; }
+.next { font-size: 13.5px; color: var(--ink-2); }
+.next b { font-weight: 600; }
+.draft { display: flex; flex-direction: column; gap: 6px; }
+.draft__toggle { align-self: flex-start; font-size: 13px; color: var(--muted); display: inline-flex; gap: 8px; align-items: center; }
+.draft__toggle:hover { color: var(--ink); }
+.draft__toggle .caret { transition: transform .25s var(--ease); display: inline-block; }
+.draft__toggle[aria-expanded="true"] .caret { transform: rotate(90deg); }
+.bubble { max-width: 560px; padding: 11px 14px; border-radius: 16px 16px 16px 5px; background: #fff; border: 1px dashed var(--line-2); font-size: 13.5px; line-height: 1.5; color: var(--ink-2); white-space: pre-line; }
+.grade { font-size: 12px; font-weight: 500; color: var(--ok); }
+.grade.is-over { color: var(--coral-ink); }
+.links { display: flex; gap: 6px 18px; flex-wrap: wrap; align-items: center; font-size: 13.5px; }
+.links button { color: var(--coral-ink); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(184,68,43,.35); }
+.links button:hover { text-decoration-color: currentColor; }
+.links .done { color: var(--muted); font-size: 13px; }
+.flag-tag { font-size: 12px; color: var(--muted); }
+
+/* Browser overlay (what the counselor sees after clicking a link) */
+.overlay { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px max(16px, env(safe-area-inset-right, 0px)) 20px max(16px, env(safe-area-inset-left, 0px)); background: rgba(21,21,23,.38); backdrop-filter: blur(3px); }
+.overlay[hidden] { display: none; }
+.browser { width: min(560px, 100%); max-height: calc(100% - 20px); overflow: auto; background: #fff; border-radius: 18px; box-shadow: var(--shadow-big); }
+.browser__bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--soft); }
+.browser__dots { display: flex; gap: 6px; }
+.browser__dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line-2); }
+.browser__url { flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; padding: 0 12px; border-radius: 8px; background: #fff; border: 1px solid var(--line); font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.browser__close { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; color: var(--muted); font-size: 18px; }
+.browser__close:hover { background: var(--bg-2); color: var(--ink); }
+.browser__body { padding: 26px 26px 24px; display: flex; flex-direction: column; gap: 14px; }
+.browser__body h3 { font-family: var(--display); font-size: 22px; font-weight: 500; letter-spacing: -0.025em; line-height: 1.2; }
+.browser__body p { color: var(--muted); }
+.browser__body .row-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.browser__body textarea { width: 100%; min-height: 150px; resize: vertical; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--ink); font-size: 14px; line-height: 1.5; box-shadow: 0 0 0 4px rgba(210,85,58,.1); }
+.browser__body textarea:focus { outline: none; }
+.notice { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: var(--bg-2); font-size: 13.5px; color: var(--ink-2); }
+.notice--ok { background: var(--ok-tint); color: var(--ok); }
+.notice--coral { background: var(--coral-tint); color: var(--coral-ink); }
+.check-svg { width: 18px; height: 18px; flex: none; margin-top: 1px; }
+
+/* Rules */
+.pad { padding: 22px 24px 26px; display: flex; flex-direction: column; gap: 22px; }
+.sec-label { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 10px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.sec-label span { font-weight: 400; color: var(--faint); }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { text-align: left; font-weight: 500; color: var(--muted); background: var(--soft); padding: 10px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; }
+.bars { display: flex; flex-direction: column; gap: 10px; }
+.bar { display: grid; grid-template-columns: minmax(0, 1fr) 44px; gap: 6px 12px; align-items: center; font-size: 13.5px; }
+.bar__track { grid-column: 1 / -1; height: 8px; border-radius: 999px; background: var(--bg-2); overflow: hidden; }
+.bar__fill { height: 100%; border-radius: 999px; background: var(--coral); transition: width .5s var(--ease); }
+.bar__pts { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.total { display: flex; align-items: baseline; gap: 12px; padding-top: 12px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.total b { font-family: var(--display); font-size: 34px; font-weight: 500; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.field { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; }
+.field label, .field .lbl { font-weight: 500; }
+.field select, .field input[type="time"] { height: 38px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line-2); background: #fff; }
+.callout { padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--soft); font-size: 13.5px; color: var(--ink-2); }
+.callout b { font-weight: 600; }
+
+/* Settings */
+.settings-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.range-row { display: flex; align-items: center; gap: 12px; }
+.range-row input { flex: 1; accent-color: var(--coral); }
+.range-row output { min-width: 28px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.hol { display: flex; flex-direction: column; gap: 8px; }
+.hol label { display: flex; align-items: center; gap: 10px; font-size: 13.5px; }
+.hol input { accent-color: var(--coral); width: 16px; height: 16px; }
+.hol .d { color: var(--faint); font-variant-numeric: tabular-nums; margin-left: auto; }
+.sched { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 1180px) { .sched { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .sched { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.sched div { padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); font-size: 13px; display: flex; flex-direction: column; gap: 2px; }
+.sched b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.sched span { color: var(--faint); font-size: 12px; }
+.sched .moved { border-color: var(--coral-tint-2, #F6D9CF); background: var(--coral-row); }
+.sched .moved span { color: var(--coral-ink); }
+
+/* IT */
+.opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.opt { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 16px; border: 1px solid var(--line); text-align: left; transition: border-color .2s, box-shadow .2s; }
+.opt:hover { border-color: var(--line-2); }
+.opt[aria-pressed="true"] { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(21,21,23,.06); }
+.opt__letter { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--bg-2); font-weight: 600; font-size: 14px; }
+.opt[aria-pressed="true"] .opt__letter { background: var(--ink); color: #fff; }
+.opt h3 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.opt dl { margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
+.opt dt { color: var(--faint); }
+.opt dd { margin: 0; color: var(--ink-2); }
+.audit td { font-variant-numeric: tabular-nums; }
+.audit .ev { font-weight: 500; }
+.empty { padding: 18px; color: var(--faint); font-size: 13.5px; text-align: center; }
+
+/* Pilot */
+.hl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding-bottom: 44px; }
+.hl__i { display: flex; flex-direction: column; gap: 6px; text-align: left; padding: 16px 18px; border-radius: 16px; border: 1px solid var(--line); background: #fff; transition: border-color .2s, transform .2s var(--ease); }
+.hl__i:hover { border-color: var(--ink); transform: translateY(-2px); }
+.hl__i b { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.hl__i b::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--coral); flex: none; }
+.hl__i span { font-size: 13.5px; color: var(--muted); }
+@media (max-width: 1023px) { .hl { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .hl { grid-template-columns: minmax(0, 1fr); } }
+.path { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+.path div { padding: 18px 20px; border-radius: 16px; background: var(--bg-2); display: flex; flex-direction: column; gap: 4px; }
+.path div:last-child { background: var(--ink); color: #fff; }
+.path b { font-size: 16px; font-weight: 600; }
+.path span { font-size: 13.5px; color: var(--muted); }
+.path div:last-child span { color: #B8B8C0; }
+.path i { font-style: normal; font-size: 12.5px; color: var(--coral-ink); font-weight: 500; }
+.path div:last-child i { color: #F0A08C; }
+@media (max-width: 820px) { .path { grid-template-columns: minmax(0, 1fr); } }
+.opt__badge { position: absolute; top: 18px; right: 18px; }
+.pilot { border-top: 1px solid var(--line); padding-block: 72px 80px; }
+.pilot__head { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 18px 48px; align-items: end; margin-bottom: 36px; }
+.pilot__head h2 { font-family: var(--display); font-weight: 500; font-size: clamp(2rem, 1.3rem + 2.2vw, 3.2rem); line-height: 1.04; letter-spacing: -0.035em; text-wrap: balance; }
+.pilot__head h2 em { font-style: normal; color: var(--coral); }
+.pilot__head p { color: var(--muted); font-size: 16px; }
+.pilot__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.card { border: 1px solid var(--line); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 16px; background: #fff; }
+.card__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.card__head h3 { font-size: 18px; font-weight: 600; letter-spacing: -0.015em; }
+.qs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.qs li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; padding: 13px 0; border-top: 1px solid var(--line); font-size: 14.5px; }
+.qs li:first-child { border-top: 0; padding-top: 0; }
+.qs .n { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--coral-tint); color: var(--coral-ink); font-size: 12.5px; font-weight: 600; }
+.qs label { display: contents; cursor: pointer; }
+.qs input { flex: none; width: 18px; height: 18px; accent-color: var(--ok); margin: 2px 0 0 4px; }
+.qs li.is-checked span.t { color: var(--faint); text-decoration: line-through; text-decoration-color: var(--line-2); }
+.progress { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.foot { border-top: 1px solid var(--line); padding-block: 26px 40px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--faint); }
+
+.toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); z-index: 60; transform: translate(-50%, 16px); max-width: calc(100% - 32px); padding: 11px 16px; border-radius: 12px; background: var(--ink); color: #fff; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .25s var(--ease); }
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+/* Mobile chapter pills */
+@media (max-width: 1023px) {
+  .demo { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .rail { position: static; }
+  .steps { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .steps::before { display: none; }
+  .steps li { padding: 0; flex: none; }
+  .step { height: 38px; padding: 0 14px 0 10px; border-radius: 999px; border: 1px solid var(--line-2); font-family: var(--sans); font-size: 13.5px; letter-spacing: 0; gap: 8px; color: var(--ink-2); }
+  li.is-active .step { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .ring { width: 12px; height: 12px; }
+  .step-p { display: none !important; }
+  .cap-mob { display: block !important; }
+  .rail-note { display: none; }
+  .settings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.cap-mob { display: none; font-size: 15px; color: var(--muted); }
+.cap-mob ul { margin: 8px 0 0; padding-left: 18px; }
+@media (max-width: 820px) {
+  .intro, .pilot__head, .pilot__grid, .two { grid-template-columns: minmax(0, 1fr); }
+  .opts { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .mail-head, .pad { padding-left: 16px; padding-right: 16px; }
+  .mail-body { padding: 14px 12px 18px; max-height: none; }
+  .stu { grid-template-columns: 36px minmax(0, 1fr); padding: 14px 8px; }
+  .stu__rank { display: none; }
+  .settings-grid { grid-template-columns: minmax(0, 1fr); }
+  .app { border-radius: 18px; }
+  .app__title .in { display: none; }
+}
+
+/* ---------- App shell (live demo) ---------- */
+html, body { height: 100%; }
+body { display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+.shell { flex: 1; min-height: 0; display: flex; }
+.srail { width: 280px; flex: none; display: flex; flex-direction: column; gap: 22px; padding: 16px 14px 14px max(14px, env(safe-area-inset-left, 0px)); border-right: 1px solid var(--line); background: var(--soft); overflow-y: auto; scrollbar-width: thin; }
+.srail__brand { display: flex; align-items: center; gap: 10px; padding: 2px 4px; font-family: var(--display); font-weight: 600; font-size: 20px; letter-spacing: -0.035em; }
+.srail__college { margin-left: auto; font-family: var(--sans); font-size: 12px; font-weight: 500; letter-spacing: 0; color: var(--muted); }
+.srail__group { display: flex; flex-direction: column; gap: 8px; }
+.srail__label { padding: 0 4px; font-size: 12.5px; font-weight: 500; color: var(--faint); }
+.srail__note { padding: 0 4px; font-size: 12px; color: var(--faint); }
+.advcard { display: flex; flex-direction: column; gap: 12px; padding: 14px; border-radius: 16px; border: 1px solid var(--line); background: #fff; box-shadow: var(--shadow-card); }
+.advcard__top { display: flex; align-items: center; gap: 10px; }
+.advcard__name { font-family: var(--display); font-size: 19px; font-weight: 500; letter-spacing: -0.025em; line-height: 1.1; }
+.advcard__sub { font-size: 12px; color: var(--faint); }
+.advcard__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.advcard__state { display: flex; align-items: center; gap: 8px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--ink-2); }
+.advcard__dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.chs { display: flex; flex-direction: column; gap: 2px; }
+.chs__sep { padding: 12px 4px 6px; font-size: 12.5px; font-weight: 500; color: var(--faint); }
+.chrow { display: flex; gap: 12px; width: 100%; padding: 9px 8px; border-radius: 12px; text-align: left; transition: background-color .2s var(--ease); }
+.chrow:hover { background: rgba(21,21,23,.04); }
+.chrow[aria-current="true"] { background: #fff; box-shadow: 0 0 0 1px var(--line), 0 2px 8px -4px rgba(21,21,23,.14); }
+.chrow__n { width: 24px; height: 24px; flex: none; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--line-2); background: #fff; font-size: 11.5px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; transition: all .25s var(--ease); }
+.chrow.is-done .chrow__n { background: var(--ink); border-color: var(--ink); color: #fff; }
+.chrow[aria-current="true"] .chrow__n { border-color: var(--coral); background: var(--coral); color: #fff; }
+.chrow__t { display: block; font-family: var(--display); font-size: 15.5px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.2; }
+.chrow__who { display: block; font-size: 12px; color: var(--faint); margin-top: 1px; }
+.chrow__st { display: block; font-size: 12px; margin-top: 3px; color: var(--muted); }
+.chrow__st.is-hot { color: var(--coral-ink); }
+.chrow__st.is-ok { color: var(--ok); }
+
+.smain { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-height: 56px; padding: 8px max(18px, env(safe-area-inset-right, 0px)) 8px 20px; border-bottom: 1px solid var(--line); background: #fff; }
+.crumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--faint); white-space: nowrap; }
+.crumb b { color: var(--ink); font-weight: 500; }
+.grow { flex: 1; }
+.tpill { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-2); background: #fff; font-size: 12.5px; color: var(--ink-2); white-space: nowrap; }
+.tpill--live { border-color: #CFE0D3; background: var(--ok-tint); color: var(--ok); }
+.tpill--live .num { font-weight: 600; font-variant-numeric: tabular-nums; }
+.tpill--play { font-weight: 500; color: var(--ink); }
+.tpill--play .play-ic { color: var(--coral); font-size: 10px; }
+.tpill--play.is-on { border-color: rgba(210,85,58,.5); background: var(--coral-tint); }
+.tpill--reset { color: var(--muted); }
+.tpill--reset:hover, .tpill--play:hover { border-color: var(--ink); }
+.pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); animation: pulse 1.8s ease-in-out infinite; flex: none; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(79,127,94,.45); } 50% { box-shadow: 0 0 0 5px rgba(79,127,94,0); } }
+.sq { width: 7px; height: 7px; border-radius: 2px; background: var(--ok); }
+.cnav { display: none; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--line); }
+.cnav button { flex: none; display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 13px 0 10px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 13px; white-space: nowrap; }
+.cnav button b { font-weight: 600; color: var(--coral); font-variant-numeric: tabular-nums; }
+.cnav button[aria-current="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.cnav button[aria-current="true"] b { color: #F0A08C; }
+.sscroll { flex: 1; min-height: 0; overflow-y: auto; scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--line-2) transparent; }
+.sinner { max-width: 1240px; margin: 0 auto; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; gap: 24px; }
+@media (min-width: 700px) { .sinner { padding-left: 36px; padding-right: 36px; } }
+.wt { margin: 14px 20px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(210,85,58,.35); background: var(--coral-row); }
+.wt[hidden], .hint[hidden], .console[hidden] { display: none; }
+.wt__n { font-size: 12.5px; font-weight: 600; color: var(--coral-ink); white-space: nowrap; }
+.wt__t { flex: 1; min-width: 220px; font-family: var(--display); font-size: 19px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.3; }
+.wt__bar { display: flex; gap: 3px; }
+.wt__bar i { width: 18px; height: 3px; border-radius: 2px; background: var(--coral-tint-2, #F6D9CF); }
+.wt__bar i.on { background: var(--coral); }
+.hint { margin: 14px 20px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 8px 8px 8px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--soft); font-size: 13px; color: var(--ink-2); }
+.hint b { color: var(--coral-ink); font-weight: 600; }
+.hint > span:first-of-type { flex: 1; min-width: 200px; }
+.hint__keys { font-size: 12px; color: var(--faint); white-space: nowrap; }
+.hint button { width: 26px; height: 26px; border-radius: 7px; color: var(--faint); font-size: 16px; }
+.hint button:hover { background: var(--bg-2); color: var(--ink); }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--soft); }
+.metrics div { padding: 10px 14px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
+.metrics div:last-child { border-right: 0; }
+.metrics span { font-size: 12px; color: var(--faint); white-space: nowrap; }
+.metrics b { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.metrics b.hot { color: var(--coral); }
+.metrics b.ok { color: var(--ok); }
+.metrics b.bump { animation: bump .45s var(--ease); }
+@keyframes bump { 40% { transform: scale(1.15); } }
+.chead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.chead__text { min-width: 0; flex: 1 1 520px; }
+.chead__kicker { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; color: var(--coral-ink); margin-bottom: 10px; }
+.chead h1 { font-family: var(--display); font-weight: 500; font-size: clamp(30px, 3.6vw, 50px); line-height: 1; letter-spacing: -0.04em; text-wrap: balance; }
+.chead__desc { margin-top: 12px; max-width: 70ch; color: var(--muted); font-size: 15px; }
+.chead__desc ul { margin: 8px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 2px; }
+.chead__nav { display: flex; gap: 8px; flex: none; }
+.btn--coral { background: var(--coral); border-color: var(--coral); color: #fff; box-shadow: 0 10px 26px -12px rgba(210,85,58,.7); }
+.btn--coral:hover { background: var(--coral-ink); border-color: var(--coral-ink); }
+.pilotwrap { display: flex; flex-direction: column; gap: 0; }
+.pilotwrap .hl { padding-bottom: 28px; }
+.pilotwrap .pilot__head { margin-top: 0 !important; }
+.pilotwrap .pilot__head h2 { font-size: clamp(1.7rem, 1.2rem + 1.6vw, 2.5rem); }
+.console { height: 210px; flex: none; display: flex; flex-direction: column; border-top: 1px solid var(--line); background: var(--soft); }
+.console__bar { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 max(12px, env(safe-area-inset-right, 0px)) 0 16px; border-bottom: 1px solid var(--line); font-size: 13px; }
+.console__bar b { font-weight: 600; }
+.console__note { color: var(--faint); font-size: 12px; }
+.console__bar .num { color: var(--faint); font-variant-numeric: tabular-nums; }
+.console__rows { flex: 1; min-height: 0; overflow-y: auto; font-size: 12.5px; }
+.ev { border-bottom: 1px solid var(--line); }
+.ev__row { display: grid; grid-template-columns: 74px 84px minmax(0, 1fr) 64px; gap: 10px; align-items: center; width: 100%; min-height: 30px; padding: 4px 16px; text-align: left; animation: evIn .5s var(--ease); }
+@keyframes evIn { from { background: var(--coral-tint); } }
+.ev__row:hover { background: #fff; }
+.ev__t { color: var(--faint); font-variant-numeric: tabular-nums; }
+.ev__tag { font-weight: 600; font-size: 11.5px; }
+.ev__txt { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2); }
+.ev__txt span { color: var(--faint); }
+.ev__st { text-align: right; color: var(--ok); font-weight: 500; }
+.ev__json { margin: 0; padding: 8px 16px 12px 184px; white-space: pre; overflow-x: auto; color: var(--muted); font-size: 12px; line-height: 1.5; background: #fff; font-family: var(--sans); font-variant-numeric: tabular-nums; }
+.sfoot { flex: none; display: flex; justify-content: space-between; gap: 12px; padding: 7px max(16px, env(safe-area-inset-right, 0px)) calc(7px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); border-top: 1px solid var(--line); background: var(--soft); font-size: 12px; color: var(--faint); white-space: nowrap; }
+.sfoot span:first-child { font-weight: 500; color: var(--muted); }
+.sfoot span:last-child { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.stage .mail-body { max-height: 640px; }
+.note-bar { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; background: var(--soft); border: 1px solid var(--line); font-size: 13.5px; color: var(--ink-2); }
+.note-bar b { font-weight: 600; }
+.kv { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.kv div { padding: 12px 14px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.kv div:last-child { border-right: 0; }
+.kv span { font-size: 12px; color: var(--faint); }
+.kv b { font-weight: 600; font-size: 14.5px; overflow-wrap: anywhere; }
+.st-active { color: var(--coral-ink); }
+.st-ok { color: var(--ok); }
+.chart { display: flex; align-items: flex-end; gap: 4px; height: 110px; padding: 10px 0 0; border-bottom: 1px solid var(--line-2); }
+.chart i { flex: 1; min-width: 4px; border-radius: 3px 3px 0 0; background: var(--line-2); }
+.chart i.gone { background: var(--coral-tint-2, #F6D9CF); height: 3px !important; }
+.chart i.back { background: var(--ok); }
+.chart-axis { display: flex; justify-content: space-between; font-size: 12px; color: var(--faint); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.cv { display: grid; grid-template-columns: 220px minmax(0, 1fr); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.cv__list { border-right: 1px solid var(--line); background: var(--soft); }
+.cv__item { padding: 12px 14px; border-bottom: 1px solid var(--line); font-size: 13px; display: flex; flex-direction: column; gap: 2px; }
+.cv__item.is-on { background: #fff; box-shadow: inset 2px 0 0 var(--coral); }
+.cv__item b { font-weight: 600; }
+.cv__item span { color: var(--faint); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cv__msg { padding: 18px; display: flex; flex-direction: column; gap: 12px; font-size: 14px; min-width: 0; }
+.cv__msg .bubble { border-style: solid; border-radius: 16px 16px 16px 5px; }
+.cv__msg .bubble.me { align-self: flex-end; border-radius: 16px 16px 5px 16px; background: var(--ink); color: #fff; border-color: var(--ink); }
+.tl { list-style: none; margin: 0; padding: 0; position: relative; }
+.tl::before { content: ""; position: absolute; left: 15px; top: 8px; bottom: 8px; width: 1px; background: var(--line); }
+.tl li { position: relative; display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 12px; padding: 10px 0; align-items: start; }
+.tl__ic { position: relative; z-index: 1; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 600; border: 1px solid var(--line); background: #fff; color: var(--muted); }
+.tl__ic.flag { background: var(--coral-tint); color: var(--coral-ink); border-color: transparent; }
+.tl__ic.send { background: var(--ok-tint); color: var(--ok); border-color: transparent; }
+.tl__ic.done { background: var(--ink); color: #fff; border-color: var(--ink); }
+.tl__ic.wait { border-style: dashed; }
+.tl b { font-weight: 600; font-size: 14px; display: block; }
+.tl p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.tl time { font-size: 12.5px; color: var(--faint); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tl li.is-pending { opacity: .5; }
+.pres-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.pres-stats div { padding: 16px; border-radius: 14px; background: var(--soft); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
+.pres-stats b { font-family: var(--display); font-size: 30px; font-weight: 500; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.pres-stats span { font-size: 12.5px; color: var(--muted); }
+.pres-stats i { font-style: normal; font-size: 12px; color: var(--ok); font-weight: 500; }
+.hbars { display: flex; flex-direction: column; gap: 10px; }
+.hbar { display: grid; grid-template-columns: 130px minmax(0, 1fr) 70px; gap: 12px; align-items: center; font-size: 13px; }
+.hbar__t { height: 10px; border-radius: 999px; background: var(--bg-2); overflow: hidden; display: flex; }
+.hbar__t i { height: 100%; background: var(--ok); }
+.hbar__t i + i { background: var(--coral-tint-2, #F6D9CF); }
+.hbar span:last-child { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.legend { display: flex; gap: 16px; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.roi { display: flex; flex-direction: column; gap: 16px; padding: 20px; border-radius: 18px; border: 1px solid #CFE0D3; background: linear-gradient(180deg, #F4F9F5, #fff 70%); }
+.roi__grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: 12px; }
+.roi__grid > div { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-radius: 14px; background: #fff; border: 1px solid var(--line); min-width: 0; }
+.roi__grid span { font-size: 12.5px; color: var(--muted); }
+.roi__grid b { font-family: var(--display); font-size: 28px; font-weight: 500; letter-spacing: -0.03em; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.roi__grid i { font-style: normal; font-size: 12px; color: var(--faint); }
+.roi__grid .roi__big { background: var(--ok); border-color: var(--ok); color: #fff; }
+.roi__grid .roi__big span, .roi__grid .roi__big i { color: #DDEDE1; }
+.roi__grid .roi__big b { font-size: 44px; }
+.roi__math { display: flex; flex-direction: column; gap: 10px; }
+.roi__bar { display: flex; flex-direction: column; gap: 8px; }
+.roi__bar > div { display: grid; grid-template-columns: 150px minmax(0, 1fr) 90px; gap: 12px; align-items: center; font-size: 13px; }
+.roi__bar i { display: block; height: 12px; border-radius: 999px; min-width: 4px; transition: width .5s var(--ease); }
+.roi__bar b { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.roi__be { font-size: 13.5px; color: var(--ink-2); }
+.roi__be b { font-weight: 600; color: var(--ok); }
+.roi__inputs { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: flex-end; padding-top: 12px; border-top: 1px dashed var(--line-2); }
+.roi__lbl { width: 100%; font-size: 12.5px; font-weight: 500; color: var(--faint); }
+.roi__inputs label { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted); flex: 1 1 180px; }
+.roi__inputs input { height: 36px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line-2); background: #fff; font-variant-numeric: tabular-nums; }
+@media (max-width: 1100px) { .roi__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .roi__grid { grid-template-columns: minmax(0, 1fr); } .roi__bar > div { grid-template-columns: 1fr 80px; } .roi__bar i { grid-column: 1 / -1; grid-row: 2; } .roi { padding: 14px; } }
+@media (max-width: 820px) { .kv { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kv div:nth-child(2n) { border-right: 0; } .kv div { border-bottom: 1px solid var(--line); } .pres-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cv { grid-template-columns: minmax(0, 1fr); } .cv__list { border-right: 0; border-bottom: 1px solid var(--line); } .hbar { grid-template-columns: 96px minmax(0, 1fr) 56px; } }
+@media (max-width: 1023px) {
+  .srail { display: none; }
+  .cnav { display: flex; }
+  .wt, .hint { margin-left: 16px; margin-right: 16px; }
+  .crumb span { display: none; }
+}
+@media (max-width: 640px) {
+  .topbar { padding-left: 16px; }
+  .metrics { display: flex; overflow-x: auto; scrollbar-width: none; }
+  .metrics div { flex: none; min-width: 120px; }
+  .hint__keys { display: none; }
+  .tpill:not(.tpill--play):not(.tpill--reset):not(.tpill--live) { display: none; }
+  .sfoot span:last-child { display: none; }
+  .ev__row { grid-template-columns: 60px 70px minmax(0, 1fr); }
+  .ev__st { display: none; }
+  .ev__json { padding-left: 16px; }
+  .chead__nav { width: 100%; }
+  .chead__nav .btn { flex: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .pulse, .ev__row, .metrics b.bump { animation: none; } }
+</style>
+
+<div class="shell">
+  <aside class="srail" aria-label="Walkthrough parts">
+    <div class="srail__brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true" data-logo></svg><span>Boom AI</span><span class="srail__college">Foothill</span></div>
+    <div class="srail__group">
+      <span class="srail__label">Following one counselor</span>
+      <div class="advcard" id="advcard"></div>
+    </div>
+    <nav class="srail__group" aria-label="Parts">
+      <span class="srail__label">The walkthrough</span>
+      <div class="chs" id="chs"></div>
+    </nav>
+    <span class="grow"></span>
+    <p class="srail__note">Prototype prepared for Foothill College. Students, counselors and results are fictional, and nothing is connected to Foothill systems. Nothing reaches a student until a counselor approves it.</p>
+  </aside>
+
+  <div class="smain">
+    <div class="topbar">
+      <div class="crumb"><span>Foothill prototype</span><span aria-hidden="true">/</span><b id="crumb"></b></div>
+      <span class="grow"></span>
+      <button class="tpill tpill--live" type="button" id="live" title="Press ` to show the event stream"><span class="pulse" aria-hidden="true"></span>Live <span class="num" id="ev-count">0 events</span></button>
+      <span class="tpill"><span class="sq" aria-hidden="true"></span>Read-only data</span>
+      <button class="tpill tpill--play" type="button" id="play"><span class="play-ic" aria-hidden="true">▶</span><span id="play-l">Play walkthrough</span></button>
+      <button class="tpill tpill--reset" type="button" id="reset">Reset demo</button>
+    </div>
+    <nav class="cnav" id="cnav" aria-label="Parts"></nav>
+    <div class="sscroll" id="sscroll">
+      <div class="wt" id="wt" hidden>
+        <span class="wt__n" id="wt-n"></span>
+        <p class="wt__t" id="wt-t" aria-live="polite"></p>
+        <span class="wt__bar" id="wt-bar" aria-hidden="true"></span>
+        <button class="btn btn--sm" type="button" id="wt-stop">Stop and explore</button>
+      </div>
+      <div class="hint" id="hint" hidden>
+        <b>Try it</b>
+        <span>Start in Maya’s digest: approve Kelsey, then open the link again. Then jump to week two to see who carried forward.</span>
+        <span class="hint__keys">← → to move</span>
+        <button type="button" id="hint-x" aria-label="Dismiss">×</button>
+      </div>
+      <div class="sinner">
+        <div class="metrics" id="metrics"></div>
+        <div class="chead">
+          <div class="chead__text">
+            <p class="chead__kicker" id="ch-kicker"></p>
+            <h1 id="ch-title"></h1>
+            <p class="chead__desc" id="ch-desc"></p>
+          </div>
+          <div class="chead__nav">
+            <button class="btn btn--sm" type="button" id="prev">← Previous</button>
+            <button class="btn btn--sm btn--coral" type="button" id="next">Next part →</button>
+          </div>
+        </div>
+        <div class="stage">
+      <!-- 1–3: the digest email -->
+      <div class="panel" data-panel="digest">
+        <div class="app">
+          <div class="app__bar">
+            <div class="app__title"><svg class="logo" style="width:20px;height:20px" viewBox="0 0 64 64" aria-hidden="true" data-logo></svg><b>Inbox</b><span class="in">Outlook · Maya Okoro, Foothill Counseling</span></div>
+            <span class="grow"></span>
+            <div class="seg" role="group" aria-label="Which Monday">
+              <button type="button" data-week="1" aria-pressed="true">Week 1 · Feb 22</button>
+              <button type="button" data-week="2" aria-pressed="false">Week 2 · Mar 1</button>
+            </div>
+          </div>
+          <div class="mail-head">
+            <p class="mail-subject" id="mail-subject"></p>
+            <div class="mail-meta"><span class="avatar avatar--xs" aria-hidden="true">B</span><span><b>Boom AI digest</b> to Maya Okoro</span><span class="when" id="mail-when"></span></div>
+          </div>
+          <div class="mail-body" id="mail-body"></div>
+        </div>
+      </div>
+
+      <!-- 4: rules -->
+      <div class="panel" data-panel="rules">
+        <div class="app">
+          <div class="app__bar"><div class="app__title"><svg class="logo" style="width:20px;height:20px" viewBox="0 0 64 64" aria-hidden="true" data-logo></svg><b>Ranking rules</b><span class="in">Foothill College</span></div><span class="grow"></span><span class="pill pill--plain">Version 1.2 · in effect since Oct 1, 2026</span></div>
+          <div class="pad">
+            <div class="callout"><b>No AI model ranks or flags students.</b> A student is flagged when one of these written rules matches. Points add up to a score, and the score sets the order. Every change to a rule gets a new version number, so any digest can be traced to the exact rules that built it.</div>
+            <div>
+              <p class="sec-label">Warning signs <span>Weights are set by the college</span></p>
+              <div class="table-wrap"><table id="rules-table"></table></div>
+            </div>
+            <div class="two">
+              <div>
+                <p class="sec-label">Priority cut-offs</p>
+                <div class="table-wrap"><table>
+                  <tr><th>Priority</th><th class="num">Score</th></tr>
+                  <tr><td><span class="pill pill--high">High</span></td><td class="num">50 and up</td></tr>
+                  <tr><td><span class="pill pill--med">Medium</span></td><td class="num">30 to 49</td></tr>
+                  <tr><td><span class="pill pill--watch">Watch</span></td><td class="num">Under 30</td></tr>
+                </table></div>
+                <p class="sec-label" style="margin-top:18px">Ties</p>
+                <p style="font-size:13.5px;color:var(--muted)">Equal scores are ordered by the closest deadline, then by student ID.</p>
+              </div>
+              <div>
+                <div class="field" style="margin-bottom:14px"><label for="explain-pick">Explain a ranking</label><select id="explain-pick"></select></div>
+                <div id="explain"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5: settings -->
+      <div class="panel" data-panel="settings">
+        <div class="app">
+          <div class="app__bar"><div class="app__title"><svg class="logo" style="width:20px;height:20px" viewBox="0 0 64 64" aria-hidden="true" data-logo></svg><b>College settings</b><span class="in">Foothill College</span></div><span class="grow"></span><span class="pill pill--ok">Changes apply to the digest</span></div>
+          <div class="pad">
+            <div class="settings-grid">
+              <div class="field"><span class="lbl" id="topn-l">Students per digest</span><div class="range-row"><input type="range" id="topn" min="5" max="25" step="1" aria-labelledby="topn-l"><output id="topn-out" for="topn"></output></div></div>
+              <div class="field"><label for="sendday">Send day</label><select id="sendday"><option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option></select></div>
+              <div class="field"><label for="sendtime">Send time, counselor’s local</label><select id="sendtime"><option>6:00 AM</option><option>6:30 AM</option><option>7:00 AM</option><option>7:30 AM</option><option>8:00 AM</option></select></div>
+              <div class="field"><label for="ifholiday">If the send day is a holiday</label><select id="ifholiday"><option value="next">Send the next weekday</option><option value="prev">Send the weekday before</option></select></div>
+            </div>
+            <div class="two">
+              <div>
+                <p class="sec-label">College holidays <span>No digest goes out on these days</span></p>
+                <div class="hol" id="hol"></div>
+              </div>
+              <div>
+                <p class="sec-label">Counselor time zones <span>Each counselor gets it at their own local time</span></p>
+                <div class="table-wrap"><table id="tz-table"></table></div>
+              </div>
+            </div>
+            <div>
+              <p class="sec-label">Next 12 sends <span id="sched-note"></span></p>
+              <div class="sched" id="sched"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6: IT -->
+      <div class="panel" data-panel="it">
+        <div class="app">
+          <div class="app__bar"><div class="app__title"><svg class="logo" style="width:20px;height:20px" viewBox="0 0 64 64" aria-hidden="true" data-logo></svg><b>For college IT</b><span class="in">Send options and audit log</span></div></div>
+          <div class="pad">
+            <div>
+              <p class="sec-label">How approved messages go out <span>Pick one. The digest demo follows your choice.</span></p>
+              <div class="opts" id="opts"></div>
+            </div>
+            <div>
+              <p class="sec-label">Audit log <span>Student IDs only. No names and no message text.</span></p>
+              <div class="table-wrap"><table class="audit" id="audit"></table></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" data-panel="sis">
+        <div class="app">
+          <div class="app__bar"><div class="app__title"><svg class="logo" style="width:20px;height:20px" viewBox="0 0 64 64" aria-hidden="true" data-logo></svg><b>Student records</b><span class="in">Foothill College · Banner</span></div><span class="grow"></span><span class="pill pill--plain">Boom reads only · nightly 2:00 AM</span></div>
+          <div class="pad" id="sis-body"></div>
+        </div>
+      </div>
+      <div class="panel" data-panel="canvas">
+        <div class="app">
+          <div class="app__bar"><div class="app__title"><svg class="logo" style="width:20px;height:20px" viewBox="0 0 64 64" aria-hidden="true" data-logo></svg><b>Canvas</b><span class="in">Kelsey’s view · Inbox and activity</span></div><span class="grow"></span><span class="pill pill--med">Phase 2</span></div>
+          <div class="pad" id="canvas-body"></div>
+        </div>
+      </div>
+      <div class="panel" data-panel="crm">
+        <div class="app">
+          <div class="app__bar"><div class="app__title"><svg class="logo" style="width:20px;height:20px" viewBox="0 0 64 64" aria-hidden="true" data-logo></svg><b>CRM timeline</b><span class="in">Kelsey Tran · student record in the college CRM</span></div><span class="grow"></span><span class="pill pill--plain">Optional sync · IDs and events only</span></div>
+          <div class="pad" id="crm-body"></div>
+        </div>
+      </div>
+      <div class="panel" data-panel="president">
+        <div class="app">
+          <div class="app__bar"><div class="app__title"><svg class="logo" style="width:20px;height:20px" viewBox="0 0 64 64" aria-hidden="true" data-logo></svg><b>Outlook</b><span class="in">VP of Student Success · inbox</span></div><span class="grow"></span><span class="pill pill--ok">Every Friday · 8:00 AM</span></div>
+          <div class="pad" id="president-body"></div>
+        </div>
+      </div>
+      <!-- 7: plan the pilot -->
+      <div class="panel" data-panel="pilot" id="pilot">
+        <div class="pilotwrap">
+<div class="hl" aria-label="What leadership and IT ask about">
+      <button type="button" class="hl__i" data-jump="3"><b>Rules, not AI, decide</b><span>Clear, versioned rules flag and rank students. Every ranking can be explained.</span></button>
+      <button type="button" class="hl__i" data-jump="1"><b>Replies reach the counselor</b><span>Texts go from a Foothill number with consent; replies land in the counselor’s Outlook.</span></button>
+      <button type="button" class="hl__i" data-jump="1"><b>Safe by design</b><span>Links change nothing on open, one action per student a week, and an audit log with IDs only.</span></button>
+      <button type="button" class="hl__i" data-jump="5"><b>No Microsoft 365 permissions</b><span>Option C opens the counselor’s own email app, so IT has nothing to approve.</span></button>
+    </div>
+    <div class="pilot__head" style="margin-top:28px">
+      <h2 id="pilot-title">A few questions, <em>then we start.</em></h2>
+      <p>Boom AI starts as a paid, one-quarter pilot for spring 2027: returning students with a Level 1 (Basic) Academic or Progress Notice hold, with Counseling owning the workflow. $15,000 fixed fee. Your answers below set the plan; ticks stay in this browser only.</p>
+    </div>
+    <div class="path">
+      <div><i>Step 1 · Spring 2027 quarter</i><b>Pilot · $15,000 fixed</b><span>Returning students with a Level 1 notice hold, timed two weeks before their registration date.</span></div>
+      <div><i>Step 2 · End of quarter</i><b>Measure</b><span>Holds cleared and registrations confirmed in Banner, plus staff time. Compared with usual practice if Foothill can provide it.</span></div>
+      <div><i>Step 3 · Ongoing</i><b>Annual contract</b><span>Expand to more counselors and teams once the pilot shows results.</span></div>
+    </div>
+    <div class="pilot__grid">
+      <div class="card">
+        <div class="card__head"><h3>Questions for the college</h3><span class="progress" id="q-prog"></span></div>
+        <ol class="qs" id="qs"></ol>
+        <button class="btn btn--sm" type="button" id="copy-qs" style="align-self:flex-start">Copy questions</button>
+      </div>
+      <div class="card">
+        <div class="card__head"><h3>What we need to get started</h3><span class="progress" id="n-prog"></span></div>
+        <ol class="qs" id="needs"></ol>
+        <button class="btn btn--sm" type="button" id="copy-needs" style="align-self:flex-start">Copy checklist</button>
+      </div>
+    </div>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+    <div class="console" id="console" hidden>
+      <div class="console__bar"><b>Event stream</b><span class="pulse" aria-hidden="true"></span><span class="num" id="ev-n">0</span><span class="console__note">IDs only, as the audit log stores them</span><span class="grow"></span><button class="btn btn--sm" type="button" id="console-x">Hide `</button></div>
+      <div class="console__rows" id="ev-rows"></div>
+    </div>
+  </div>
+</div>
+<div class="sfoot"><span>Boom AI · Foothill College prototype · boomai.app</span><span>Fictional students, counselors and data · not affiliated with or endorsed by Foothill College · nothing leaves your browser</span></div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="browser" role="dialog" aria-modal="true" aria-labelledby="br-title">
+    <div class="browser__bar"><span class="browser__dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="browser__url" id="br-url"></span><button class="browser__close" type="button" id="br-close" aria-label="Close">×</button></div>
+    <div class="browser__body" id="br-body"></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const CHECK = '<svg class="check-svg" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 9.2l2.3 2.3 4.7-4.9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/* Logo: 24 spokes, one coral seed */
+const logoSVG = (() => { let l = '', d = ''; for (let i = 0; i < 24; i++) { const a = i / 24 * Math.PI * 2 - Math.PI / 2, x = (32 + 27.5 * Math.cos(a)).toFixed(2), y = (32 + 27.5 * Math.sin(a)).toFixed(2); l += `<line x1="32" y1="32" x2="${x}" y2="${y}"/>`; d += `<circle cx="${x}" cy="${y}" r="2" fill="${i === 3 ? '#D2553A' : '#151517'}"/>`; } return `<g stroke="#151517" stroke-width="1.35" stroke-linecap="round">${l}</g>${d}`; })();
+$$('[data-logo]').forEach((s) => (s.innerHTML = logoSVG));
+
+/* ---------- Rules (versioned, plain) ---------- */
+const RULES = [
+  { key: 'hold', id: 'R1', name: 'Registration hold', when: 'Any hold that blocks spring registration', pts: () => 30 },
+  { key: 'notreg', id: 'R2', name: 'Not registered for spring', when: 'No spring units and registration closes within 30 days', pts: () => 25 },
+  { key: 'fafsa', id: 'R3', name: 'FAFSA or CADAA not filed', when: 'No 2027–28 FAFSA or California Dream Act application, and the student had aid this year', pts: () => 20 },
+  { key: 'canvas', id: 'R4', name: 'No Canvas login', when: '14 or more days: 20 points. 7 to 13 days: 10 points', pts: (v) => (v >= 14 ? 20 : v >= 7 ? 10 : 0) },
+  { key: 'missing', id: 'R5', name: 'Missing assignments', when: '2 or more missing in the last 14 days', pts: (v) => (v >= 2 ? 10 : 0) },
+  { key: 'units', id: 'R6', name: 'Dropped below 12 units', when: 'Enrollment fell under full-time this term', pts: () => 10 },
+];
+const reasonText = (k, v) => ({ hold: `Registration hold: ${v}`, notreg: 'Not registered for spring', fafsa: 'FAFSA or CADAA not filed', canvas: `${v} days without a Canvas login`, missing: `${v} missing assignments`, units: 'Dropped below 12 units' }[k]);
+const NEXT = {
+  hold: 'Walk the student through the one step that clears the hold. For a Level 1 notice: email fhprobation@fhda.edu, then the Canvas activity.',
+  notreg: 'Register for spring now. Sections are filling.',
+  fafsa: 'File the 2027–28 FAFSA or California Dream Act application with Financial Aid.',
+  canvas: 'Check in and ask what is getting in the way.',
+  missing: 'Book a tutoring session this week.',
+  units: 'Review the unit plan to protect aid and progress.',
+};
+const DRAFT = {
+  hold: 'Hi {f}, it’s Maya from Counseling. A hold is stopping you from signing up for spring classes. It takes two steps to clear: email fhprobation@fhda.edu, then finish a short Canvas activity. Want help? Just reply.',
+  notreg: 'Hi {f}, it’s Maya from Counseling. You have not signed up for spring classes yet, and classes are filling. I can help you pick classes in 15 minutes. What day works for you?',
+  fafsa: 'Hi {f}, it’s Maya from Counseling. Next year’s FAFSA and Dream Act application are open, and yours is not filed yet. Filing early helps you keep your aid. I can help you do it this week. Want to pick a time?',
+  canvas: 'Hi {f}, it’s Maya from Counseling. I noticed you have not been on Canvas for a while. Is everything OK? If something is in the way, I can help. Just reply.',
+  missing: 'Hi {f}, it’s Maya from Counseling. A few of your class tasks are missing. Our tutors can help you catch up fast. Want me to book a time for you this week?',
+  units: 'Hi {f}, it’s Maya from Counseling. Your units dropped below full time. That can change your aid. Let’s look at your plan together. Can you meet this week?',
+};
+
+const mk = (id, name, flags) => ({ id: '20' + id + '1', short: id, name, first: name.split(' ')[0], ini: name.split(' ').map((p) => p[0]).join(''), flags });
+const WEEK1 = [
+  mk('0417', 'Kelsey Tran', { hold: 'Level 1 Academic Notice', notreg: 1, canvas: 16 }),
+  mk('0583', 'Omar Haddad', { hold: 'missing transcript', fafsa: 1, missing: 2 }),
+  mk('0729', 'Lily Chen', { notreg: 1, fafsa: 1, missing: 3 }),
+  mk('0861', 'Marcus Thompson', { canvas: 21, missing: 4, units: 1 }),
+  mk('0934', 'Priya Shah', { notreg: 1, canvas: 9 }),
+  mk('1108', 'Ana García', { hold: '$45 parking citation', notreg: 1 }),
+  mk('1052', 'Jordan Williams', { canvas: 16, missing: 2 }),
+  mk('1176', 'Kevin Nguyen', { fafsa: 1, units: 1 }),
+  mk('1243', 'Maya Johnson', { notreg: 1 }),
+  mk('1319', 'Luis Herrera', { hold: '$620 balance' }),
+  mk('1385', 'Aisha Bello', { fafsa: 1, canvas: 8 }),
+  mk('1452', 'Ethan Park', { canvas: 14 }),
+  mk('1520', 'Sofia Rossi', { missing: 2, units: 1 }),
+  mk('1597', 'Tomás Medina', { fafsa: 1 }),
+  mk('1663', 'Grace Kim', { canvas: 10, missing: 2 }),
+  mk('1689', 'Samuel Ortiz', { canvas: 11 }),
+  mk('1712', 'Chloe Adams', { missing: 3 }),
+  mk('1748', 'Ibrahim Yusuf', { units: 1 }),
+  mk('1766', 'Emma Wilson', { canvas: 7 }),
+  mk('1791', 'Leo Carter', { missing: 2 }),
+  mk('1815', 'Nadia Petrova', { canvas: 8 }),
+  mk('1833', 'Ravi Patel', { missing: 2 }),
+  mk('1858', 'Julia Santos', { canvas: 9 }),
+  mk('1871', 'Owen Davis', { missing: 2 }),
+  mk('1899', 'Mia Thompson', { canvas: 7 }),
+];
+const NEW2 = [
+  mk('1730', 'Noah Brooks', { notreg: 1, canvas: 12 }),
+  mk('1802', 'Hannah Lee', { hold: '$310 balance', notreg: 1 }),
+  mk('1877', 'Diego Flores', { fafsa: 1, missing: 2 }),
+  mk('1941', 'Zoe Martin', { canvas: 15 }),
+];
+const REGISTERED_ON_OWN = ['1108', '1243', '0934'];
+
+const breakdown = (s) => RULES.filter((r) => s.flags[r.key] != null).map((r) => ({ r, pts: r.pts(s.flags[r.key]) })).filter((x) => x.pts > 0);
+const score = (s) => breakdown(s).reduce((a, b) => a + b.pts, 0);
+const prio = (n) => (n >= 50 ? ['High', 'high'] : n >= 30 ? ['Medium', 'med'] : ['Watch', 'watch']);
+const lead = (s) => breakdown(s).sort((a, b) => b.pts - a.pts)[0].r.key;
+const rank = (list) => list.slice().sort((a, b) => score(b) - score(a) || (b.flags.notreg ? 1 : 0) - (a.flags.notreg ? 1 : 0) || a.id.localeCompare(b.id));
+
+/* ---------- Reading level (Flesch–Kincaid grade) ---------- */
+function syllables(w) { w = w.toLowerCase().replace(/[^a-z]/g, ''); if (!w) return 0; if (w.length <= 3) return 1; w = w.replace(/(?:[^laeiouy]es|[^laeiouy]ed|[^laeiouy]e)$/, '').replace(/^y/, ''); const m = w.match(/[aeiouy]{1,2}/g); return Math.max(1, m ? m.length : 1); }
+function grade(t) {
+  const words = t.replace(/[’']/g, '').match(/[A-Za-z0-9$]+/g) || []; if (!words.length) return 0;
+  const sents = Math.max(1, (t.match(/[.!?]+(\s|$)/g) || []).length);
+  const syl = words.reduce((a, w) => a + syllables(w), 0);
+  return Math.max(1, 0.39 * (words.length / sents) + 11.8 * (syl / words.length) - 15.59);
+}
+const gradeHTML = (t) => { const g = grade(t); return `<span class="grade${g > 8 ? ' is-over' : ''}">Grade ${g.toFixed(1)} reading level${g > 8 ? ' · above 8, simplify to send' : ' · at or below 8 ✓'}</span>`; };
+
+/* ---------- State ---------- */
+const DEF = { ch: 0, week: 1, acts: {}, edits: {}, open: {}, topN: 15, day: 1, time: '7:00 AM', ifHol: 'next', hols: { pres: true, mem: true }, tz: { sj: 'PT', ml: 'PT', db: 'PT', rk: 'PT' }, mode: 'A', audit: [], ticks: {}, evs: [], hintOff: false, console: false };
+let S = JSON.parse(JSON.stringify(DEF));
+try { const s = JSON.parse(localStorage.getItem('boom-walk-foothill') || 'null'); if (s && typeof s === 'object') S = Object.assign(S, s); } catch (e) {}
+const save = () => { try { localStorage.setItem('boom-walk-foothill', JSON.stringify(S)); } catch (e) {} };
+
+/* ---------- Chapters ---------- */
+const CH = [
+  { hash: 'digest', panel: 'digest', week: 1, t: 'The Monday digest', who: 'Maya’s Outlook inbox', p: 'One Outlook email at 7:00 AM, counselor’s local time, with their top 15 students.', b: ['Why each student was flagged, like a registration hold, FAFSA not filed or 16 days without a Canvas login', 'One next step per student', 'A drafted message checked to stay at or below an 8th-grade reading level'] },
+  { hash: 'approve', panel: 'digest', week: 1, t: 'Approve, edit or skip', who: 'The link pages', p: 'Each student has three links. Try them on Kelsey.', b: ['Opening a link changes nothing, so email scanners can’t trigger a send', 'One action per student per week, so nothing is ever sent twice', 'Texts go from a Foothill number, and replies come straight back to the counselor’s Outlook'] },
+  { hash: 'week-two', panel: 'digest', week: 2, t: 'Week two', who: 'Next Monday’s digest', p: 'The next digest picks up where this one left off.', b: ['Opens with the students who registered', 'Keeps anyone still unregistered', 'Carries forward students you skipped'] },
+  { hash: 'rules', panel: 'rules', t: 'How it decides', who: 'Ranking rules', p: 'Clear, versioned rules decide who is flagged and in what order.', b: ['No AI model ranks or flags students', 'Every ranking can be opened and explained'] },
+  { hash: 'settings', panel: 'settings', t: 'Per-college settings', who: 'College admin', p: 'Each college sets how and when the digest arrives.', b: ['Top N students per counselor', 'Send day and time', 'Holidays, like Presidents’ Day moving the send to Tuesday', 'Counselor time zones'] },
+  { hash: 'it', panel: 'it', t: 'For college IT', who: 'Send options and audit log', p: 'Three send options side by side, and an audit log with no student names.', b: ['A sends from Outlook', 'B saves an Outlook draft', 'C opens the counselor’s own email app, with no Microsoft 365 permissions', 'The audit log records student IDs only'] },
+  { hash: 'sis', panel: 'sis', t: 'Student system record', who: 'Where the hold lives', p: 'Holds, registration and aid live in Banner. Boom reads a weekly export each night at 2:00 AM and never writes back.', b: ['Read-only: Boom never changes a student record', 'The record updates on its own when Kelsey clears the notice and registers', 'What Boom receives is IDs and fields, not notes'] },
+  { hash: 'canvas', panel: 'canvas', t: 'Canvas inbox', who: 'Kelsey’s courses · phase 2', p: 'Canvas activity is one of the warning signs. In phase 2, the same approved message can also arrive in Canvas Inbox, from a name Kelsey knows.', b: ['16 days without a login is what flagged her', 'Activity returns once she reconnects', 'Still approved by the counselor first'] },
+  { hash: 'crm', panel: 'crm', t: 'CRM timeline', who: 'Kelsey’s record in the CRM', p: 'Every flag, approval and outcome can be written to the college’s CRM, so any team sees the same history. It sits alongside tools like Element451 instead of replacing them.', b: ['Events and IDs only, no message text', 'Shows who acted and when', 'Updates as you click through the demo'] },
+  { hash: 'president', panel: 'president', t: 'Leadership weekly email', who: 'Friday summary for the VP of Student Success', p: 'Every Friday the VP of Student Success gets one short email, with the president and deans copied: students reached, registrations confirmed in Banner, holds cleared, and cost per registration against the $15,000 fee.', b: ['Totals only, no student names', 'Nothing projected: no claimed lift', 'Includes this demo’s clicks for Maya’s caseload'] },
+  { hash: 'pilot', panel: 'pilot', t: 'Plan the pilot', who: 'For Foothill', p: 'A one-quarter spring 2027 pilot at a $15,000 fixed fee, then an annual contract. These questions set the plan.', b: [] },
+];
+const NPARTS = 6;
+function counts() {
+  const w1 = rank(WEEK1).slice(0, S.topN), k = (x) => S.acts['1:' + x.id];
+  const sent = w1.filter((x) => k(x) && k(x).type === 'sent').length, skipped = w1.filter((x) => k(x) && k(x).type === 'skip').length;
+  return { n: w1.length, sent, skipped, handled: sent + skipped, reg: week2List().registered.length };
+}
+function chStatus(i) {
+  const c = counts(), tick = Object.values(S.ticks).filter(Boolean).length;
+  return [
+    [`${c.handled} of ${c.n} handled`, c.handled ? 'ok' : 'hot'],
+    [c.handled ? `${c.sent} sent · ${c.skipped} skipped` : 'Waiting for Maya', c.handled ? 'ok' : ''],
+    [`${c.reg} registered since last week`, c.reg ? 'ok' : ''],
+    ['Rules v1.2 · no AI ranking', ''],
+    [`Top ${S.topN} · ${dayName[S.day]}s ${S.time}`, ''],
+    [`Option ${S.mode} · ${S.audit.length} audit rows`, ''],
+    dan().reg ? ['Hold released · 4 spring units', 'ok'] : ['Hold active · 0 spring units', 'hot'],
+    dan().sent ? ['Message in Canvas Inbox', 'ok'] : ['Last login 16 days ago', 'hot'],
+    [`${crmItems().filter((x) => !x.pending).length} timeline entries`, ''],
+    [`Friday · ${usd(roiNums().perReg)} per registration`, 'ok'],
+    [`${tick} of 10 ticked`, tick ? 'ok' : ''],
+  ][i];
+}
+function renderNav() {
+  $('#chs').innerHTML = CH.map((c, i) => { const [st, cls] = chStatus(i); return `${i === NPARTS ? '<span class="chs__sep">Across the college</span>' : i === CH.length - 1 ? '<span class="chs__sep">Next step</span>' : ''}<button class="chrow${i < S.ch ? ' is-done' : ''}" type="button" data-go="${i}" aria-current="${i === S.ch}"><span class="chrow__n">${i < CH.length - 1 ? i + 1 : '→'}</span><span style="min-width:0"><span class="chrow__t">${esc(c.t)}</span><span class="chrow__who">${esc(c.who)}</span><span class="chrow__st${cls ? ' is-' + cls : ''}">${esc(st)}</span></span></button>`; }).join('');
+  $('#cnav').innerHTML = CH.map((c, i) => `<button type="button" data-go="${i}" aria-current="${i === S.ch}"><b>${i < CH.length - 1 ? i + 1 : '→'}</b>${esc(c.t)}</button>`).join('');
+  const c = counts(), left = c.n - c.handled;
+  $('#advcard').innerHTML = `<div class="advcard__top"><span class="avatar">MO</span><div style="min-width:0"><div class="advcard__name">Maya Okoro</div><div class="advcard__sub">Counselor C-1042 · Counseling · PT</div></div></div>
+    <div class="advcard__chips"><span class="chip chip--grey">${dayName[S.day]}s ${S.time}</span><span class="chip">Top ${S.topN} students</span></div>
+    <div class="advcard__state"><span class="advcard__dot" style="background:${left ? 'var(--coral)' : 'var(--ok)'}"></span>${left ? `${left} students still need her this week` : 'Every student handled this week'}</div>`;
+  const cur = $('#cnav [aria-current="true"]'); if (cur) cur.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+}
+let lastMetrics = {};
+function renderMetrics() {
+  const c = counts();
+  const m = [['Students read', '2,000', ''], ['In this digest', String(c.n), 'hot'], ['Handled', `${c.handled} of ${c.n}`, c.handled ? 'ok' : ''], ['Messages sent', String(c.sent), c.sent ? 'ok' : ''], ['Registered by week two', String(c.reg), c.reg ? 'ok' : ''], ['Rules', 'v1.2', ''], ['Send option', S.mode, '']];
+  $('#metrics').innerHTML = m.map(([l, v, cls]) => `<div><span>${l}</span><b class="${cls}${lastMetrics[l] !== undefined && lastMetrics[l] !== v ? ' bump' : ''}">${v}</b></div>`).join('');
+  lastMetrics = Object.fromEntries(m.map(([l, v]) => [l, v]));
+}
+function go(i, fromHash) {
+  const prev = S.ch;
+  S.ch = Math.max(0, Math.min(CH.length - 1, i)); const c = CH[S.ch];
+  if (c.week) S.week = c.week;
+  save();
+  $('#crumb').textContent = c.t;
+  $('#ch-kicker').textContent = S.ch < NPARTS ? `Part ${S.ch + 1} of ${NPARTS} · ${c.who}` : S.ch < CH.length - 1 ? `Across the college · ${c.who}` : 'Next step · for the college';
+  $('#ch-title').textContent = c.t;
+  $('#ch-desc').innerHTML = esc(c.p) + (c.b.length ? `<ul>${c.b.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : '');
+  $$('.panel').forEach((p) => p.classList.toggle('is-on', p.dataset.panel === c.panel));
+  $('#prev').disabled = S.ch === 0;
+  $('#next').disabled = S.ch === CH.length - 1;
+  $('#next').textContent = S.ch === CH.length - 2 ? 'Plan the pilot →' : 'Next part →';
+  if (!fromHash && location.hash.slice(1) !== c.hash) { try { history.replaceState(null, '', '#' + c.hash); } catch (e) {} }
+  if (prev !== S.ch) $('#sscroll').scrollTop = 0;
+  renderAll();
+}
+document.addEventListener('click', (e) => { const b = e.target.closest('[data-go]'); if (b) { stopAuto(); go(+b.dataset.go); } });
+$('#prev').addEventListener('click', () => { stopAuto(); go(S.ch - 1); });
+$('#next').addEventListener('click', () => { stopAuto(); go(S.ch + 1); });
+$$('[data-jump]').forEach((b) => b.addEventListener('click', () => go(+b.dataset.jump)));
+document.addEventListener('keydown', (e) => {
+  if (e.target.closest('input, textarea, select') || !$('#overlay').hidden) return;
+  if (e.key === 'ArrowRight') { stopAuto(); go(S.ch + 1); } else if (e.key === 'ArrowLeft') { stopAuto(); go(S.ch - 1); } else if (e.key === '`') toggleConsole();
+});
+
+/* ---------- Event stream ---------- */
+const TAGS = { DIGEST: '#B8442B', LINK: '#62626A', SEND: '#4F7F5E', SKIP: '#8A6414', RULES: '#151517', SETTINGS: '#3F5FA8', IT: '#6B4BC4', AUDIT: '#93939B' };
+S.evs = S.evs || [];
+function emit(tag, text, sub, payload, status) {
+  S.evs.unshift({ id: Date.now() + Math.random(), t: evClock(), tag, text, sub: sub || '', payload: payload || {}, status: status || 'ok' });
+  S.evs = S.evs.slice(0, 80); save(); renderEvents();
+}
+let evTick = 7 * 3600 + 38 * 60;
+const evClock = () => { evTick += 7 + Math.floor(Math.random() * 20); const h = Math.floor(evTick / 3600), m = Math.floor(evTick / 60) % 60, sec = evTick % 60; return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`; };
+let evOpen = null;
+function renderEvents() {
+  $('#ev-count').textContent = `${S.evs.length} event${S.evs.length === 1 ? '' : 's'}`; $('#ev-n').textContent = S.evs.length;
+  $('#ev-rows').innerHTML = S.evs.length ? S.evs.map((e) => `<div class="ev"><button class="ev__row" type="button" data-ev="${e.id}" aria-expanded="${evOpen === e.id}"><span class="ev__t">${e.t}</span><span class="ev__tag" style="color:${TAGS[e.tag] || '#62626A'}">${e.tag.charAt(0) + e.tag.slice(1).toLowerCase()}</span><span class="ev__txt">${esc(e.text)} <span>${esc(e.sub)}</span></span><span class="ev__st">${esc(e.status)}</span></button>${evOpen === e.id ? `<pre class="ev__json">${esc(JSON.stringify(e.payload, null, 2))}</pre>` : ''}</div>`).join('') : '<p class="empty">No events yet. Approve Kelsey in the digest to start the stream.</p>';
+}
+$('#ev-rows').addEventListener('click', (e) => { const r = e.target.closest('[data-ev]'); if (!r) return; const id = +r.dataset.ev; evOpen = evOpen === id ? null : id; renderEvents(); });
+function toggleConsole(force) { const c = $('#console'); c.hidden = force === undefined ? !c.hidden : !force; S.console = !c.hidden; save(); }
+$('#live').addEventListener('click', () => toggleConsole());
+$('#console-x').addEventListener('click', () => toggleConsole(false));
+
+/* ---------- Hint ---------- */
+if (!S.hintOff) $('#hint').hidden = false;
+$('#hint-x').addEventListener('click', () => { $('#hint').hidden = true; S.hintOff = true; save(); });
+
+/* ---------- Walkthrough autoplay ---------- */
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+let autoRun = 0;
+const SCRIPT = [
+  { n: 1, ch: 0, hold: 6000, text: 'Monday, 7:00 AM. Maya’s digest arrives in Outlook: her top 15 students, why each one was flagged, one next step and a drafted message.' },
+  { n: 2, ch: 1, hold: 4200, text: 'She clicks Approve for Kelsey. Opening the link changes nothing, so an email scanner can’t send anything. Only the button acts.', act: 'open' },
+  { n: 2, ch: 1, hold: 4200, text: 'She confirms. The message goes out as a text from Foothill’s approved number, and Kelsey’s reply comes straight back to Maya’s Outlook.', act: 'confirm' },
+  { n: 2, ch: 1, hold: 4200, text: 'Opening the same link again changes nothing. Each student gets one action a week, so nothing is ever sent twice.', act: 'reopen' },
+  { n: 2, ch: 1, hold: 3200, text: 'She skips Omar this week. Nothing is sent, and he carries forward to next Monday.', act: 'skip' },
+  { n: 3, ch: 2, hold: 6400, text: 'Next Monday the digest opens with the students who registered. Anyone still unregistered stays on, and Omar carries forward.' },
+  { n: 4, ch: 3, hold: 6400, text: 'No AI model ranks or flags students. Written, versioned rules add up to a score, and any ranking can be opened and explained.' },
+  { n: 5, ch: 4, hold: 6400, text: 'Each college sets top N, send day and time, holidays and counselor time zones. Presidents’ Day moves the February 15 send to Tuesday.', act: 'sched' },
+  { n: 6, ch: 5, hold: 6800, text: 'For IT, three send options. Option C opens the counselor’s own email app, with no Microsoft 365 permissions. The audit log keeps IDs only.', act: 'modeC' },
+  { n: 7, ch: 6, hold: 6200, text: 'Across the college: Kelsey’s hold lives in Banner. Boom only reads it, each night at 2:00 AM. After she clears the notice and registers, the record updates on its own.', act: 'wk2' },
+  { n: 8, ch: 7, hold: 6000, text: 'Canvas shows why she was flagged: 16 days without a login. In phase 2, Maya’s approved message can also land in Canvas Inbox.' },
+  { n: 9, ch: 8, hold: 6000, text: 'The CRM timeline keeps one shared history: flagged, approved, sent from Maya’s mailbox, reply received, hold released, registered.' },
+  { n: 10, ch: 9, hold: 7400, text: 'On Friday, the VP of Student Success gets one email: students reached, registrations confirmed in Banner, holds cleared and cost per registration against the $15,000 fee. Nothing is projected.', act: 'roi' },
+  { n: 10, ch: 10, hold: 5200, text: 'That’s one counselor’s week, start to finish. Press Stop and explore to try it yourself, or plan your pilot below.' },
+];
+function setBanner(st) {
+  $('#wt').hidden = !st; $('#play').classList.toggle('is-on', !!st);
+  $('#play-l').textContent = st ? 'Stop' : 'Play walkthrough'; $('.play-ic').textContent = st ? '■' : '▶';
+  if (!st) return;
+  $('#hint').hidden = true;
+  $('#wt-n').textContent = `Walkthrough · ${st.n} of 10`; $('#wt-t').textContent = st.text;
+  $('#wt-bar').innerHTML = Array.from({ length: 10 }, (_, i) => `<i class="${i < st.n ? 'on' : ''}"></i>`).join('');
+}
+function stopAuto() { if (!autoRun) return; autoRun = 0; setBanner(null); if (!S.hintOff) $('#hint').hidden = false; }
+async function playAuto() {
+  const run = ++autoRun; resetDemo(true);
+  const top = rank(WEEK1)[0], second = rank(WEEK1)[1], key = '1:' + top.id;
+  for (const st of SCRIPT) {
+    if (run !== autoRun) return;
+    go(st.ch); setBanner(st);
+    if (st.act === 'open') { await sleep(1400); if (run !== autoRun) return; openLink('approve', key); }
+    if (st.act === 'confirm') { await sleep(1200); if (run !== autoRun) return; const b = $('[data-confirm="send"]'); if (b) b.click(); }
+    if (st.act === 'reopen') { closeLink(); await sleep(900); if (run !== autoRun) return; openLink('approve', key); }
+    if (st.act === 'skip') { closeLink(); await sleep(700); if (run !== autoRun) return; openLink('skip', '1:' + second.id); await sleep(1200); if (run !== autoRun) return; const b = $('[data-confirm="skip"]'); if (b) b.click(); }
+    if (st.act === 'sched') { await sleep(1500); const el = $('#sched .moved'); if (el && run === autoRun) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    if (st.act === 'roi') { await sleep(1800); const el = $('.roi'); if (el && run === autoRun) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    if (st.act === 'wk2') { S.week = 2; save(); }
+    if (st.act === 'modeC') { await sleep(1500); if (run !== autoRun) return; const b = $('[data-mode="C"]'); if (b) b.click(); }
+    await sleep(st.hold);
+    if (st.act === 'skip' && run === autoRun) closeLink();
+  }
+  if (run === autoRun) stopAuto();
+}
+$('#play').addEventListener('click', () => (autoRun ? stopAuto() : playAuto()));
+$('#wt-stop').addEventListener('click', stopAuto);
+function resetDemo(quiet) {
+  const keep = { ticks: S.ticks, hintOff: S.hintOff, console: S.console };
+  S = Object.assign(JSON.parse(JSON.stringify(DEF)), keep, { evs: [] });
+  clock = 7 * 60 + 38; evTick = 7 * 3600 + 38 * 60;
+  if (!$('#overlay').hidden) { $('#overlay').hidden = true; cur = null; }
+  emit('DIGEST', 'Monday digest delivered', 'counselor C-1042 · 15 students · 7:00 AM PT', { event: 'digest.delivered', counselor_id: 'C-1042', students: rank(WEEK1).slice(0, 15).map((x) => x.id), rules_version: 'v1.2' }, 'sent');
+  save(); go(0); if (!quiet) toast('Demo reset');
+}
+$('#reset').addEventListener('click', () => { stopAuto(); resetDemo(); });
+
+/* ---------- Digest ---------- */
+function week2List() {
+  const reg = new Set(REGISTERED_ON_OWN);
+  WEEK1.forEach((s) => { const a = S.acts['1:' + s.id]; if (a && a.type === 'sent' && (s.flags.notreg || s.flags.hold) && ['0417', '0729', '1730', '1319'].includes(s.short)) reg.add(s.short); });
+  const topW1 = rank(WEEK1).slice(0, S.topN);
+  const registered = topW1.filter((s) => reg.has(s.short) && (s.flags.notreg || s.flags.hold));
+  const kept = [];
+  topW1.forEach((s) => {
+    if (registered.includes(s)) return;
+    const a = S.acts['1:' + s.id];
+    if (s.flags.notreg) kept.push({ s, tag: 'Still unregistered' });
+    else if (a && a.type === 'skip') kept.push({ s, tag: 'Skipped last week' });
+    else if (!a) kept.push({ s, tag: 'No action last week' });
+  });
+  const keptIds = new Set(kept.map((k) => k.s.id));
+  const pool = rank([...NEW2, ...WEEK1.filter((s) => !topW1.includes(s))]).map((s) => ({ s, tag: NEW2.includes(s) ? 'New this week' : '' }));
+  const merged = [...kept, ...pool.filter((p) => !keptIds.has(p.s.id))];
+  const list = merged.sort((a, b) => score(b.s) - score(a.s) || a.s.id.localeCompare(b.s.id)).slice(0, S.topN);
+  return { registered, list };
+}
+const weekDate = (w) => (w === 1 ? 'Feb 22' : 'Mar 1');
+const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+function renderDigest() {
+  $$('[data-week]').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.week === S.week)));
+  const w = S.week;
+  let items, wins = '';
+  if (w === 1) items = rank(WEEK1).slice(0, S.topN).map((s) => ({ s, tag: '' }));
+  else {
+    const r = week2List(); items = r.list;
+    if (r.registered.length) wins = `<div class="wins"><div style="display:flex;gap:10px;align-items:flex-start">${CHECK}<span><b>${r.registered.length} of last week’s students registered.</b> They are off your list.</span></div><div class="names">${r.registered.map((s) => `<span>${esc(s.name)}</span>`).join('')}</div></div>`;
+  }
+  const d = dayName[S.day];
+  $('#mail-subject').textContent = `Your ${d} digest: ${items.length} students need you this week`;
+  $('#mail-when').textContent = `${d.slice(0, 3)}, ${weekDate(w)} · ${S.time}`;
+  const handled = items.filter((it) => S.acts[w + ':' + it.s.id]).length;
+  const greet = w === 1
+    ? `Good morning, Maya. <b>${items.length} students</b> need a person this week, ranked by the college’s rules. Each has one next step and a drafted message. Opening a link changes nothing until you confirm.`
+    : `Good morning, Maya. Here is week two. Students who registered are off your list. Anyone still unregistered stays on, and students you skipped carry forward.`;
+  $('#mail-body').innerHTML = `${wins}<p class="mail-greet">${greet} <span style="color:var(--faint)">${handled} of ${items.length} handled.</span></p>` + items.map(({ s, tag }, i) => {
+    const key = w + ':' + s.id, a = S.acts[key], sc = score(s), [pl, pc] = prio(sc), l = lead(s);
+    const text = S.edits[key] ?? DRAFT[l].replace('{f}', s.first);
+    const open = S.open[key] ?? (i === 0 && !a);
+    const status = a ? (a.type === 'skip' ? `<span class="done">Skipped ${esc(a.when)} · carries to next week</span>` : `<span class="done">${esc(a.label)} ${esc(a.when)}</span>`) : '';
+    return `<article class="stu${i === 0 && !a ? ' is-focus' : ''}${a ? ' is-handled' : ''}" data-id="${s.id}">
+      <span class="stu__rank">${i + 1}</span>
+      <span class="avatar" aria-hidden="true">${s.ini}</span>
+      <div class="stu__main">
+        <div class="stu__top"><span class="stu__name">${esc(s.name)}</span><span class="stu__id">ID ${s.id} · score ${sc}</span>${tag ? `<span class="flag-tag">· ${esc(tag)}</span>` : ''}${a ? `<span class="pill ${a.type === 'skip' ? 'pill--watch' : 'pill--ok'}">${a.type === 'skip' ? 'Skipped' : esc(a.short)}</span>` : `<span class="pill pill--${pc}">${pl}</span>`}</div>
+        <div class="reasons">${breakdown(s).sort((x, y) => y.pts - x.pts).map((b) => `<span class="chip">${esc(reasonText(b.r.key, s.flags[b.r.key]))}</span>`).join('')}</div>
+        <p class="next"><b>Next step:</b> ${esc(NEXT[l])}</p>
+        <div class="draft">
+          <button class="draft__toggle" type="button" data-toggle="${key}" aria-expanded="${open}"><span class="caret" aria-hidden="true">›</span>${open ? 'Hide' : 'Show'} drafted message · ${gradeHTML(text)}</button>
+          ${open ? `<div class="bubble">${esc(text)}\n\n– Maya Okoro, Counseling</div>` : ''}
+        </div>
+        <div class="links">${status}<button type="button" data-act="approve" data-key="${key}">Approve</button><button type="button" data-act="edit" data-key="${key}">Edit</button><button type="button" data-act="skip" data-key="${key}">Skip</button></div>
+      </div>
+    </article>`;
+  }).join('');
+}
+$('#mail-body').addEventListener('click', (e) => {
+  const t = e.target.closest('[data-toggle]');
+  if (t) { const k = t.dataset.toggle; S.open[k] = t.getAttribute('aria-expanded') !== 'true'; save(); renderDigest(); return; }
+  const b = e.target.closest('[data-act]');
+  if (b) openLink(b.dataset.act, b.dataset.key);
+});
+$$('[data-week]').forEach((b) => b.addEventListener('click', () => { stopAuto(); S.week = +b.dataset.week; const target = S.week === 2 ? 2 : (S.ch === 2 ? 0 : S.ch); go(target); if (S.week === 2) emit('DIGEST', 'Week two digest delivered', `counselor C-1042 · ${week2List().registered.length} registered since last week`, { event: 'digest.delivered', week: 2, registered: week2List().registered.map((x) => x.id), carried_forward: week2List().list.filter((x) => x.tag === 'Skipped last week').map((x) => x.s.id) }, 'sent'); }));
+
+/* ---------- Link pages ---------- */
+const allStudents = [...WEEK1, ...NEW2];
+const MODES = {
+  A: { name: 'Text from Foothill’s number', short: 'Texted', label: 'Texted from Foothill’s approved number', btn: 'Send as a text', done: 'Texted from Foothill’s approved number to a student who consented. Replies come straight back to Maya’s Outlook.', perm: 'None in Microsoft 365. A Foothill-approved texting number, used only with student consent.', how: 'Boom sends the approved message as a text. Student replies arrive in the counselor’s Outlook.', where: 'Student’s phone. Replies go to the counselor’s Outlook.' },
+  B: { name: 'Send from Outlook', short: 'Sent', label: 'Sent from your Outlook', btn: 'Send from my Outlook', done: 'Sent from your Foothill Outlook. It is in your Sent Items, and replies come straight to your inbox.', perm: 'One-time consent for delegated Mail.Send. No tenant-wide permissions.', how: 'Boom sends the approved message through the counselor’s own Outlook mailbox.', where: 'Counselor’s Sent Items. Replies go to the counselor.' },
+  C: { name: 'Open the counselor’s email app', short: 'Opened in email', label: 'Opened in your email app', btn: 'Open in my email app', done: 'Your email app opened with the message filled in. Press Send there. Replies come straight to your inbox.', perm: 'None. No Microsoft 365 permissions needed.', how: 'Approve opens a pre-filled message in whatever email app the counselor uses.', where: 'Counselor’s own email app. Replies go to the counselor.' },
+};
+let clock = 7 * 60 + 38; /* demo clock: counselor opens the digest at 7:38 AM */
+const nowStr = () => { clock += 2; const h = Math.floor(clock / 60), m = clock % 60; return `${h > 12 ? h - 12 : h}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`; };
+const token = (key, act) => { let h = 2166136261; for (const c of key + act) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return (h >>> 0).toString(36); };
+function log(ev, sid, extra) { const row = { t: `${S.week === 1 ? 'Feb 22' : 'Mar 1'} ${nowStr()}`, ev, sid, adv: 'C-1042', extra: extra || '', rules: 'v1.2' }; S.audit.unshift(row); S.audit = S.audit.slice(0, 40); save();
+  const tag = ev.startsWith('link') ? 'LINK' : ev === 'student.skipped' ? 'SKIP' : 'SEND';
+  const txt = { 'link.opened': 'Link opened, nothing changed', 'student.skipped': 'Student skipped, carries forward', 'message.sent': 'Message sent', 'draft.saved': 'Saved to counselor’s Outlook Drafts', 'mailto.opened': 'Opened in counselor’s email app' }[ev] || ev;
+  emit(tag, txt, `student ${sid} · ${extra || ''}`, { event: ev, student_id: sid, counselor_id: 'C-1042', detail: extra || null, rules_version: 'v1.2', names_stored: false, message_text_stored: false }, ev === 'link.opened' ? 'no-op' : 'ok'); }
+let cur = null;
+function openLink(act, key) {
+  const [, id] = key.split(':'), s = allStudents.find((x) => x.id === id); cur = { act, key, s };
+  $('#br-url').textContent = `boomai.app/a/${token(key, act)}`;
+  log('link.opened', s.id, act + ' · no change');
+  const a = S.acts[key];
+  let html;
+  if (a) {
+    html = `<h3>Already handled this week</h3>
+      <div class="notice notice--ok">${CHECK}<span>${a.type === 'skip' ? `You skipped ${esc(s.first)} ${esc(a.when)}.` : `${esc(a.label)} ${esc(a.when)}.`} Each student gets one action a week, so nothing was sent twice.</span></div>
+      <p>Opening this link again changed nothing.</p><div class="row-btns"><button class="btn btn--dark" type="button" data-close>Back to the digest</button></div>`;
+  } else if (act === 'skip') {
+    html = `<h3>Skip ${esc(s.first)} this week?</h3><p>Nothing is sent. ${esc(s.first)} carries forward to next Monday’s digest.</p>
+      <div class="notice">${CHECK}<span>Opening this page changed nothing. Only the button below records a choice.</span></div>
+      <div class="row-btns"><button class="btn btn--dark" type="button" data-confirm="skip">Skip this week</button><button class="btn" type="button" data-close>Cancel</button></div>`;
+  } else {
+    const l = lead(s), text = S.edits[key] ?? DRAFT[l].replace('{f}', s.first), m = MODES[S.mode];
+    html = `<h3>${act === 'edit' ? 'Edit the message to' : 'Approve the message to'} ${esc(s.name)}</h3>
+      <div class="notice">${CHECK}<span>Opening this page changed nothing, so a link scanner can’t send anything. Only the button below acts.</span></div>
+      ${act === 'edit' ? `<label for="br-text" style="font-size:13px;font-weight:500">Message</label><textarea id="br-text">${esc(text)}</textarea><div id="br-grade">${gradeHTML(text)}</div>` : `<div class="bubble" style="max-width:none">${esc(text)}\n\n– Maya Okoro, Counseling</div><div>${gradeHTML(text)}</div>`}
+      <p style="font-size:13.5px">Option ${S.mode} · ${esc(m.name)}. To ${esc(s.first)}, from Foothill Counseling. Replies go to Maya Okoro.</p>
+      <div class="row-btns"><button class="btn btn--dark" type="button" data-confirm="send" id="br-send">${esc(m.btn)}</button><button class="btn" type="button" data-close>Cancel</button></div>`;
+  }
+  $('#br-body').innerHTML = html; $('#overlay').hidden = false;
+  const ta = $('#br-text');
+  if (ta) { ta.focus(); ta.addEventListener('input', () => { $('#br-grade').innerHTML = gradeHTML(ta.value); $('#br-send').disabled = grade(ta.value) > 8 || !ta.value.trim(); }); }
+  else $('#br-body button').focus();
+}
+function closeLink() { $('#overlay').hidden = true; cur = null; renderAll(); }
+$('#overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'overlay' || e.target.closest('[data-close]') || e.target.closest('#br-close')) return closeLink();
+  const c = e.target.closest('[data-confirm]'); if (!c || !cur) return;
+  const { key, s } = cur, m = MODES[S.mode];
+  if (c.dataset.confirm === 'skip') { S.acts[key] = { type: 'skip', when: nowStr() }; log('student.skipped', s.id); }
+  else {
+    const ta = $('#br-text'); if (ta) S.edits[key] = ta.value;
+    S.acts[key] = { type: 'sent', when: nowStr(), label: m.label, short: m.short };
+    log(S.mode === 'A' ? 'message.sent' : S.mode === 'B' ? 'draft.saved' : 'mailto.opened', s.id, `option ${S.mode}${ta ? ' · edited' : ''}`);
+  }
+  save();
+  $('#br-body').innerHTML = c.dataset.confirm === 'skip'
+    ? `<h3>Skipped</h3><div class="notice notice--ok">${CHECK}<span>${esc(s.first)} carries forward to next Monday. Nothing was sent.</span></div><div class="row-btns"><button class="btn btn--dark" type="button" data-close>Back to the digest</button></div>`
+    : `<h3>${esc(m.label)}</h3><div class="notice notice--ok">${CHECK}<span>${esc(m.done)}</span></div><p>This student’s action for the week is done. Opening any of these links again changes nothing.</p><div class="row-btns"><button class="btn btn--dark" type="button" data-close>Back to the digest</button></div>`;
+  $('#br-body button').focus();
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#overlay').hidden) closeLink(); });
+
+/* ---------- Rules panel ---------- */
+function renderRules() {
+  $('#rules-table').innerHTML = `<tr><th>Rule</th><th>Warning sign</th><th>When it matches</th><th class="num">Points</th></tr>` +
+    RULES.map((r) => `<tr><td>${r.id}</td><td><b style="font-weight:600">${r.name}</b></td><td style="color:var(--muted)">${r.when}</td><td class="num">${r.key === 'canvas' ? '10 or 20' : r.pts(99)}</td></tr>`).join('');
+  const sel = $('#explain-pick'), list = rank(WEEK1).slice(0, 15);
+  if (!sel.options.length) sel.innerHTML = list.map((s, i) => `<option value="${s.id}">#${i + 1} ${esc(s.name)}</option>`).join('');
+  const s = allStudents.find((x) => x.id === sel.value) || list[0], bd = breakdown(s), sc = score(s), [pl, pc] = prio(sc), pos = list.indexOf(s) + 1;
+  $('#explain').innerHTML = `<div class="bars">${bd.map((b) => `<div class="bar"><span>${b.r.id} · ${esc(reasonText(b.r.key, s.flags[b.r.key]))}</span><span class="bar__pts">+${b.pts}</span><span class="bar__track"><span class="bar__fill" style="width:${b.pts / 30 * 100}%"></span></span></div>`).join('')}</div>
+    <div class="total" style="margin-top:14px"><b>${sc}</b><span class="pill pill--${pc}">${pl}</span><span style="color:var(--muted);font-size:13.5px">Ranked #${pos} of 2,000 · rules v1.2</span></div>`;
+}
+$('#explain-pick').addEventListener('change', () => { renderRules(); const id = $('#explain-pick').value, st = allStudents.find((x) => x.id === id); emit('RULES', 'Ranking explained', `student ${id} · score ${score(st)} · v1.2`, { event: 'ranking.explained', student_id: id, score: score(st), rules: breakdown(st).map((b) => ({ rule: b.r.id, points: b.pts })), rules_version: 'v1.2', model_used: false }); });
+
+/* ---------- Settings ---------- */
+const HOLS = [ { k: 'pres', n: 'Presidents’ Day', d: new Date(2027, 1, 15) }, { k: 'mem', n: 'Memorial Day', d: new Date(2027, 4, 31) } ];
+const fmt = (d) => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+const ADV = [ { k: 'sj', n: 'Maya Okoro', where: 'Main campus' }, { k: 'ml', n: 'Rafael Alvarez', where: 'Main campus' }, { k: 'db', n: 'Tasha Brooks', where: 'Online' }, { k: 'rk', n: 'Kiran Singh', where: 'Sunnyvale Center' } ];
+const OFF = { PT: 0, MT: 1, CT: 2, ET: 3 };
+function addMin(t, h) { const [hm, ap] = t.split(' '); let [H, M] = hm.split(':').map(Number); if (ap === 'PM' && H !== 12) H += 12; if (ap === 'AM' && H === 12) H = 0; H -= h; const ap2 = H >= 12 ? 'PM' : 'AM'; let h12 = H % 12; if (h12 <= 0) h12 += 12; return `${h12}:${String(M).padStart(2, '0')} ${ap2}`; }
+function renderSettings() {
+  $('#topn').value = S.topN; $('#topn-out').textContent = S.topN; $('#sendday').value = S.day; $('#sendtime').value = S.time; $('#ifholiday').value = S.ifHol;
+  $('#hol').innerHTML = HOLS.map((h) => `<label><input type="checkbox" id="hol-${h.k}" data-hol="${h.k}" ${S.hols[h.k] ? 'checked' : ''}>${h.n}<span class="d">${fmt(h.d)}</span></label>`).join('');
+  $('#tz-table').innerHTML = `<tr><th>Counselor</th><th>Time zone</th><th class="num">Arrives (PT)</th></tr>` + ADV.map((a) => `<tr><td><b style="font-weight:600">${a.n}</b><br><span style="color:var(--faint);font-size:12.5px">${a.where}</span></td><td><select id="tz-${a.k}" data-tz="${a.k}" aria-label="Time zone for ${a.n}" style="height:32px;border-radius:8px;border:1px solid var(--line-2);padding:0 6px;background:#fff">${Object.keys(OFF).map((z) => `<option ${S.tz[a.k] === z ? 'selected' : ''}>${z}</option>`).join('')}</select></td><td class="num">${S.time} local<br><span style="color:var(--faint);font-size:12.5px">${addMin(S.time, OFF[S.tz[a.k]])} PT</span></td></tr>`).join('');
+  const isHol = (d) => HOLS.some((h) => S.hols[h.k] && h.d.toDateString() === d.toDateString());
+  const out = []; let d = new Date(2027, 1, 8); while (d.getDay() !== +S.day) d.setDate(d.getDate() + 1);
+  for (let i = 0; i < 12; i++) {
+    let s = new Date(d), moved = null;
+    if (isHol(s)) { const h = HOLS.find((x) => x.d.toDateString() === s.toDateString()); do { s.setDate(s.getDate() + (S.ifHol === 'next' ? 1 : -1)); } while (s.getDay() === 0 || s.getDay() === 6 || isHol(s)); moved = h.n; }
+    out.push({ s, moved }); d.setDate(d.getDate() + 7);
+  }
+  $('#sched').innerHTML = out.map((o) => `<div class="${o.moved ? 'moved' : ''}"><b>${fmt(o.s)}</b><span>${o.moved ? `Moved for ${esc(o.moved)}` : S.time + ' local'}</span></div>`).join('');
+  const n = out.filter((o) => o.moved).length;
+  $('#sched-note').textContent = n ? `${n} moved for holidays` : 'No holiday changes';
+}
+$('#topn').addEventListener('input', (e) => { S.topN = +e.target.value; $('#topn-out').textContent = S.topN; save(); });
+$('#topn').addEventListener('change', () => { toast(`Digest now lists the top ${S.topN} students`); renderNav(); renderMetrics(); emit('SETTINGS', 'Top N changed', `${S.topN} students per digest`, { event: 'settings.updated', field: 'top_n', value: S.topN }); });
+$('[data-panel="settings"]').addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.id === 'sendday') S.day = +t.value; else if (t.id === 'sendtime') S.time = t.value; else if (t.id === 'ifholiday') S.ifHol = t.value;
+  else if (t.dataset.hol) S.hols[t.dataset.hol] = t.checked; else if (t.dataset.tz) S.tz[t.dataset.tz] = t.value; else return;
+  save(); renderSettings(); renderNav(); renderMetrics();
+  emit('SETTINGS', 'College setting changed', t.id || t.dataset.hol || t.dataset.tz, { event: 'settings.updated', field: t.id || ('holiday.' + (t.dataset.hol || '')) || ('tz.' + t.dataset.tz), value: t.type === 'checkbox' ? t.checked : t.value });
+});
+
+/* ---------- IT ---------- */
+function renderIT() {
+  $('#opts').innerHTML = Object.entries(MODES).map(([k, m]) => `<button class="opt" type="button" data-mode="${k}" aria-pressed="${S.mode === k}"><span class="opt__letter">${k}</span>${k === 'C' ? '<span class="pill pill--ok opt__badge">Fastest path to a pilot</span>' : ''}<h3>${esc(m.name)}</h3><dl><div><dt>How it works</dt><dd>${esc(m.how)}</dd></div><div><dt>Microsoft 365 permissions</dt><dd>${esc(m.perm)}</dd></div><div><dt>Where it shows up</dt><dd>${esc(m.where)}</dd></div></dl></button>`).join('');
+  $('#audit').innerHTML = `<tr><th>Time</th><th>Event</th><th>Student ID</th><th>Counselor ID</th><th>Detail</th><th>Rules</th></tr>` + (S.audit.length ? S.audit.map((a) => `<tr><td>${esc(a.t)}</td><td class="ev">${esc(a.ev)}</td><td>${esc(a.sid)}</td><td>${esc(a.adv)}</td><td style="color:var(--muted)">${esc(a.extra)}</td><td>${esc(a.rules)}</td></tr>`).join('') : `<tr><td colspan="6" class="empty">No events yet. Approve, edit or skip a student in the digest and it shows up here.</td></tr>`);
+}
+$('#opts').addEventListener('click', (e) => { const b = e.target.closest('[data-mode]'); if (!b) return; S.mode = b.dataset.mode; save(); renderIT(); renderNav(); renderMetrics(); toast(`Option ${S.mode} selected: ${MODES[S.mode].name}`); emit('IT', `Send option ${S.mode} selected`, MODES[S.mode].name, { event: 'send_option.selected', option: S.mode, m365_permissions: S.mode === 'C' ? 'none' : S.mode === 'A' ? 'Mail.Send (delegated)' : 'Mail.ReadWrite (delegated)' }); });
+
+/* ---------- Pilot ---------- */
+const QS = [
+  'Where things are now: what happens today when a returning student with a Level 1 notice hold never emails fhprobation@fhda.edu? Who notices, and when?',
+  'Where you want to be: if spring went exactly as you wanted, how many of those students would clear their hold two weeks before their registration date?',
+  'What is in the way: what has kept that from happening already, whether staff time, the channel, or students not answering?',
+  'What staying put costs: if nothing changes before registration opens February 16, what does spring look like for these students and for your staff?',
+  'The decision: who would approve a small paid pilot, what would they need to see, and when should we check back?',
+];
+const NEEDS = [
+  'A sample roster export, with fictional or anonymized data',
+  'A Counseling owner and one contact for data',
+  'Approved wording for the first texts and answers',
+  'Registration dates and office links to use in messages',
+  'The approver’s name and a date to check back',
+];
+function renderPilot() {
+  const row = (pfx, t, i) => { const k = pfx + i, on = !!S.ticks[k]; return `<li class="${on ? 'is-checked' : ''}"><span class="n">${i + 1}</span><label for="tk-${k}" style="display:flex;gap:12px;align-items:flex-start;justify-content:space-between"><span class="t">${esc(t)}</span><input type="checkbox" id="tk-${k}" data-tick="${k}" ${on ? 'checked' : ''}></label></li>`; };
+  $('#qs').innerHTML = QS.map((t, i) => row('q', t, i)).join('');
+  $('#needs').innerHTML = NEEDS.map((t, i) => row('n', t, i)).join('');
+  $('#q-prog').textContent = `${QS.filter((_, i) => S.ticks['q' + i]).length} of ${QS.length} answered`;
+  $('#n-prog').textContent = `${NEEDS.filter((_, i) => S.ticks['n' + i]).length} of ${NEEDS.length} received`;
+}
+$('#pilot').addEventListener('change', (e) => { const k = e.target.dataset.tick; if (!k) return; S.ticks[k] = e.target.checked; save(); renderPilot(); renderNav(); });
+async function copy(text, label) { try { await navigator.clipboard.writeText(text); toast(`${label} copied`); } catch (e) { toast('Copy is blocked here. Select the text and copy it instead.'); } }
+$('#copy-qs').addEventListener('click', () => copy('Questions to plan the Boom AI pilot:\n' + QS.map((q, i) => `${i + 1}. ${q}`).join('\n'), 'Questions'));
+$('#copy-needs').addEventListener('click', () => copy('To get started, we would need:\n' + NEEDS.map((q) => `- ${q}`).join('\n'), 'Checklist'));
+
+/* ---------- Across the college ---------- */
+function dan() {
+  const top = WEEK1.find((x) => x.short === '0417'), a = S.acts['1:' + top.id];
+  const reg = S.week === 2 && week2List().registered.includes(top);
+  return { s: top, sent: !!(a && a.type === 'sent'), skip: !!(a && a.type === 'skip'), when: a ? a.when : '', label: a && a.label, reg, wk2: S.week === 2 };
+}
+function renderSIS() {
+  const d = dan(), rel = d.reg;
+  $('#sis-body').innerHTML = `
+    <div class="note-bar">${CHECK}<span><b>Boom only reads this record.</b> A weekly export reaches Boom each night at 2:00 AM. Boom never writes to Banner, so a hold or a registration only changes when the student or staff change it here.</span></div>
+    <div class="kv"><div><span>Student</span><b>Kelsey Tran</b></div><div><span>Student ID</span><b>2004171</b></div><div><span>Program</span><b>Pharmacy Technology certificate</b></div><div><span>Standing</span><b>Returning · 1 course to finish</b></div></div>
+    <div><p class="sec-label">Holds</p><div class="table-wrap"><table>
+      <tr><th>Hold</th><th>Placed</th><th class="num">Amount</th><th>Blocks</th><th>Status</th></tr>
+      <tr><td><b style="font-weight:600">Academic Notice hold</b><br><span style="color:var(--faint);font-size:12.5px">Level 1 (Basic) · fall grades</span></td><td>Jan 28</td><td class="num">—</td><td>Registration</td><td class="${rel ? 'st-ok' : 'st-active'}">${rel ? 'Released Feb 25 · Canvas activity done' : 'Active · email fhprobation@fhda.edu, then the Canvas activity'}</td></tr>
+    </table></div></div>
+    <div class="two">
+      <div><p class="sec-label">Spring 2027 registration</p><div class="table-wrap"><table>
+        <tr><th>Course</th><th class="num">Units</th><th>Status</th></tr>
+        ${rel ? '<tr><td>Final Pharmacy Technology course · online section</td><td class="num">4</td><td class="st-ok">Enrolled Feb 26</td></tr>' : '<tr><td colspan="3" style="color:var(--coral-ink)">Not registered · 0 units · spring registration is open</td></tr>'}
+      </table></div></div>
+      <div><p class="sec-label">What Boom received last night <span>Fields and IDs only</span></p><div class="table-wrap"><table>
+        <tr><th>Field</th><th>Value</th></tr>
+        <tr><td>student_id</td><td>2004171</td></tr><tr><td>hold_code</td><td>${rel ? 'none' : 'ACN1 · Level 1 notice'}</td></tr>
+        <tr><td>spring_units</td><td>${rel ? '4' : '0'}</td></tr><tr><td>fafsa_or_cadaa</td><td>received</td></tr>
+        <tr><td>last_canvas_login</td><td>${rel ? 'Feb 25' : 'Feb 6'}</td></tr><tr><td>counselor_id</td><td>C-1042</td></tr>
+      </table></div></div>
+    </div>
+    <div class="seg" role="group" aria-label="Which night"><button type="button" data-sisweek="1" aria-pressed="${!d.wk2}">Read on Feb 22</button><button type="button" data-sisweek="2" aria-pressed="${d.wk2}">Read on Mar 1</button></div>
+    ${d.wk2 && !rel ? `<div class="note-bar">Kelsey hasn’t registered in this run of the demo. Approve her message in the digest, then come back: the Mar 1 read shows the hold released.</div>` : ''}`;
+}
+document.addEventListener('click', (e) => { const b = e.target.closest('[data-sisweek]'); if (!b) return; S.week = +b.dataset.sisweek; save(); renderSIS(); renderNav(); });
+function renderCanvas() {
+  const d = dan(), back = d.reg;
+  const days = Array.from({ length: 28 }, (_, i) => { const n = i < 12 ? [5, 6, 4, 6, 7, 5, 6, 4, 5, 3, 2, 1][i] : 0; return n; });
+  if (back) { days[25] = 3; days[26] = 5; days[27] = 6; }
+  const msg = d.sent ? `<div class="bubble">${esc(S.edits['1:' + d.s.id] ?? DRAFT.hold.replace('{f}', 'Kelsey'))}\n\n– Maya Okoro, Counseling</div>${back ? '<div class="bubble me">I emailed fhprobation and finished the Canvas activity, and I signed up for my last class. Thank you!</div>' : ''}` : `<div class="note-bar">No message yet. Approve Kelsey in the digest and the same message can arrive here too, in phase 2.</div>`;
+  $('#canvas-body').innerHTML = `
+    <div class="cv">
+      <div class="cv__list">
+        <div class="cv__item ${d.sent ? 'is-on' : ''}"><b>Maya Okoro</b><span>${d.sent ? 'A hold is stopping you from signing up…' : 'No messages'}</span></div>
+        <div class="cv__item"><b>Pharmacy Technology · instructor</b><span>Final project rubric posted</span></div>
+        <div class="cv__item"><b>Academic Notice · Level 1 activity</b><span>Start here to clear your hold</span></div>
+      </div>
+      <div class="cv__msg"><p style="font-size:12.5px;color:var(--faint)">Canvas Inbox · ${d.sent ? 'Today ' + esc(d.when) : 'Inbox'}</p>${msg}</div>
+    </div>
+    <div>
+      <p class="sec-label">Kelsey’s Canvas logins, last 28 days <span>${back ? 'Back on Canvas after Maya’s message' : '16 days without a login · rule R4, +20 points'}</span></p>
+      <div class="chart" role="img" aria-label="Daily Canvas logins. Steady for 12 days, then none for 16 days${back ? ', then back for the last 3 days' : ''}.">${days.map((n, i) => `<i class="${n === 0 ? 'gone' : i >= 25 && back ? 'back' : ''}" style="height:${Math.max(3, n / 7 * 100)}%"></i>`).join('')}</div>
+      <div class="chart-axis"><span>Jan 26</span><span>Feb 6 · last login</span><span>Feb 22</span></div>
+    </div>`;
+}
+function crmItems() {
+  const d = dan(), it = [];
+  it.push({ ic: 'flag', l: '!', t: 'Flagged by Boom rules v1.2', p: 'Score 75 · R1 registration hold, R2 not registered, R4 16 days without Canvas', time: 'Mon Feb 22 · 2:04 AM' });
+  it.push({ ic: '', l: 'D', t: 'Included in Maya Okoro’s Monday digest', p: 'Ranked #1 of 15 · counselor C-1042', time: 'Mon Feb 22 · 7:00 AM' });
+  if (d.sent) {
+    it.push({ ic: 'send', l: '✓', t: `${d.label}`, p: `Approved by Maya Okoro · send option ${S.mode} · message text not stored`, time: `Mon Feb 22 · ${d.when}` });
+    it.push({ ic: '', l: '↩', t: 'Reply received in Maya’s inbox', p: 'Kelsey asked whether the notice means she’s getting kicked out · reply content stays in Outlook', time: 'Mon Feb 22 · 9:18 AM' });
+  } else if (d.skip) it.push({ ic: '', l: '→', t: 'Skipped by Maya Okoro', p: 'Carries forward to the Mar 1 digest', time: `Mon Feb 22 · ${d.when}` });
+  else it.push({ ic: 'wait', l: '…', t: 'Waiting for Maya’s approval', p: 'Approve, edit or skip from the digest', time: 'Now', pending: true });
+  if (d.reg) {
+    it.push({ ic: 'send', l: '✓', t: 'Hold released', p: 'Level 1 (Basic) Academic Notice · cleared after the Canvas activity', time: 'Thu Feb 25 · 3:40 PM' });
+    it.push({ ic: 'done', l: '✓', t: 'Registered for spring · 4 units', p: 'Confirmed in Banner on the Feb 26 export', time: 'Fri Feb 26 · 2:00 AM' });
+    it.push({ ic: '', l: '–', t: 'Removed from the digest', p: 'Opens the Mar 1 digest as registered', time: 'Mon Mar 1 · 7:00 AM' });
+  } else if (d.sent || d.skip) it.push({ ic: 'wait', l: '…', t: 'Still unregistered', p: 'Stays on the Mar 1 digest', time: 'Mon Mar 1 · 7:00 AM', pending: !S.week || S.week === 1 });
+  return it;
+}
+function renderCRM() {
+  const it = crmItems();
+  $('#crm-body').innerHTML = `
+    <div class="kv"><div><span>Contact</span><b>Kelsey Tran</b></div><div><span>Student ID</span><b>2004171</b></div><div><span>Owner</span><b>Maya Okoro · C-1042</b></div><div><span>Boom status</span><b class="${dan().reg ? 'st-ok' : 'st-active'}">${dan().reg ? 'Registered · off the list' : 'Needs a person'}</b></div></div>
+    <div><p class="sec-label">Activity <span>Newest last · written by Boom’s optional CRM sync</span></p>
+    <ol class="tl">${it.map((x) => `<li class="${x.pending ? 'is-pending' : ''}"><span class="tl__ic ${x.ic}">${x.l}</span><div><b>${esc(x.t)}</b><p>${esc(x.p)}</p></div><time>${esc(x.time)}</time></li>`).join('')}</ol></div>`;
+}
+function roiHTML() {
+  const o = roiNums();
+  return `<div class="roi">
+    <div class="roi__head"><p class="sec-label" style="margin:0">The pilot so far <span>Week ${o.weeks} of a one-quarter pilot · $15,000 fixed fee</span></p></div>
+    <div class="roi__grid">
+      <div class="roi__big"><span>Cost per registered student</span><b>${usd(o.perReg)}</b><i>${usd(o.cost)} fee ÷ ${o.registered} confirmed registrations</i></div>
+      <div><span>Registered for spring</span><b>${o.registered}</b><i>Confirmed in Banner</i></div>
+      <div><span>Holds cleared</span><b>${o.holds}</b><i>Confirmed by Foothill</i></div>
+      <div><span>Staff hours saved</span><b>${o.hours}</b><i>${o.followups} follow-ups at Counseling’s estimate of 6 minutes</i></div>
+    </div>
+    <p class="roi__be"><b>Not claimed:</b> how many of these students would have registered anyway. A comparison with usual practice comes in the final report if Foothill can provide one.</p>
+  </div>`;
+}
+document.addEventListener('change', (e) => { const k = e.target.dataset && e.target.dataset.roi; if (!k) return; S.roi = Object.assign({}, S.roi, { [k]: Math.max(0, +e.target.value || 0) }); save(); renderPres(); renderNav(); emit('SETTINGS', 'ROI assumption changed', `${k} = ${e.target.value}`, { event: 'roi.assumption_updated', field: k, value: +e.target.value }); });
+function presNums() {
+  const c = counts();
+  const reached = 38 + c.sent, registered = 14 + c.reg, holds = 9 + (dan().reg ? 1 : 0), dollars = 7420;
+  return { reached, registered, holds, dollars, flagged: 60 };
+}
+function roiNums() {
+  const n = presNums(), cost = 15000, followups = 118 + counts().sent * 2;
+  return { cost, weeks: 3, registered: n.registered, holds: n.holds, perReg: n.registered ? cost / n.registered : 0, followups, hours: (followups * 6 / 60).toFixed(1), multiple: 0 };
+}
+const usd = (x) => '$' + Math.round(x).toLocaleString('en-US');
+function renderPres() {
+  const n = presNums(), c = counts();
+  const adv = [['Maya Okoro', c.sent, c.n - c.sent], ['Rafael Alvarez', 11, 4], ['Tasha Brooks', 13, 2], ['Kiran Singh', 14, 1]];
+  $('#president-body').innerHTML = `
+    <div class="mail-head" style="padding:0 0 14px;border-bottom:1px solid var(--line)">
+      <p class="mail-subject">This week at Foothill: ${n.registered} flagged students registered · ${usd(roiNums().perReg)} per registration</p>
+      <div class="mail-meta"><span class="avatar avatar--xs" aria-hidden="true">B</span><span><b>Boom AI weekly summary</b> to the VP of Student Success · cc President, deans</span><span class="when">Fri, Feb 26 · 8:00 AM</span></div>
+    </div>
+    <p class="mail-greet" style="margin:0">Good morning. Here is the week in four numbers. All totals, no student names.</p>
+    <div class="pres-stats">
+      <div><b>${n.flagged}</b><span>Students in counselors’ Monday digests</span><i>4 counselors · 15 each</i></div>
+      <div><b>${n.reached}</b><span>Students reached by their counselor</span><i>Texts with consent · replies to counselors’ Outlook</i></div>
+      <div><b>${n.registered}</b><span>Flagged students now registered</span><i>Confirmed in Banner</i></div>
+      <div><b>$${n.dollars.toLocaleString('en-US')}</b><span>Holds cleared across ${n.holds} students</span><i>Payment plans and grants</i></div>
+    </div>
+    <div>
+      <p class="sec-label">Reached by counselor <span>Out of each counselor’s 15</span></p>
+      <div class="hbars">${adv.map(([nm, r, l]) => `<div class="hbar"><span>${nm}</span><span class="hbar__t"><i style="width:${r / 15 * 100}%"></i><i style="width:${l / 15 * 100}%"></i></span><span>${r} of 15</span></div>`).join('')}</div>
+      <div class="legend" style="margin-top:10px"><span><i style="background:var(--ok)"></i>Reached</span><span><i style="background:var(--coral-tint-2, #F6D9CF)"></i>Not yet reached</span></div>
+    </div>
+    ${roiHTML()}
+    <div class="note-bar">Rules v1.2 · no changes this week. Maya Okoro’s row follows your clicks in this demo; the other counselors and all totals are fictional.</div>`;
+}
+
+let tt; function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => el.classList.remove('on'), 2600); }
+function renderAll() { const p = CH[S.ch].panel; if (p === 'digest') renderDigest(); if (p === 'rules') renderRules(); if (p === 'settings') renderSettings(); if (p === 'it') renderIT(); if (p === 'sis') renderSIS(); if (p === 'canvas') renderCanvas(); if (p === 'crm') renderCRM(); if (p === 'president') renderPres(); renderNav(); renderMetrics(); }
+
+function fromHash() { const i = CH.findIndex((c) => c.hash === location.hash.slice(1)); go(i >= 0 ? i : S.ch, true); }
+addEventListener('hashchange', fromHash);
+renderPilot();
+if (!S.evs.length) emit('DIGEST', 'Monday digest delivered', 'counselor C-1042 · 15 students · 7:00 AM PT', { event: 'digest.delivered', counselor_id: 'C-1042', students: rank(WEEK1).slice(0, 15).map((x) => x.id), rules_version: 'v1.2' }, 'sent'); else renderEvents();
+if (S.console) toggleConsole(true);
+fromHash();
+})();
+</script>
+
+</body></html>
