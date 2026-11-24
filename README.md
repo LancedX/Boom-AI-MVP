@@ -6,6 +6,9 @@
 [![Vite](https://img.shields.io/badge/Vite-5.4-646cff.svg)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38bdf8.svg)](https://tailwindcss.com/)
 [![Tests](https://img.shields.io/badge/Tests-Passing-success.svg)]()
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Online-success.svg)](https://lancedx.github.io/Boom-AI-MVP/)
+
+**Live Client URL:** [https://lancedx.github.io/Boom-AI-MVP/](https://lancedx.github.io/Boom-AI-MVP/)
 
 > **Boom AI** is an intelligent operational layer sitting alongside a college’s existing systems of record (Banner SIS, Canvas LMS, and Element451/Slate CRM). It empowers academic counselors to identify at-risk continuing students, prioritize outreach deterministically, approve communications with 100% human-in-the-loop control, and track enrollment recovery into the next quarter.
 
@@ -86,8 +89,8 @@ Deep, fact-checked student profile drawers covering:
 
 ```bash
 # Clone the repository
-git clone https://github.com/ADITYASHARMACODER/boom-ai-mvp.git
-cd boom-ai-mvp
+git clone https://github.com/LancedX/Boom-AI-MVP.git
+cd Boom-AI-MVP
 
 # Install dependencies
 npm install
